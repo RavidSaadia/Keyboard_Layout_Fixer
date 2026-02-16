@@ -18,7 +18,7 @@ namespace KeyboardLayoutFixer
     /// </summary>
     public partial class App : Application
     {
-        public const string AppVersion = "1.1.0";
+        public const string AppVersion = "1.2.0";
 
         private static Mutex? _mutex;
         private NotifyIcon? _notifyIcon;
@@ -125,6 +125,28 @@ namespace KeyboardLayoutFixer
         [System.Runtime.InteropServices.DllImport("user32.dll")]
         private static extern bool DestroyIcon(IntPtr handle);
 
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        private static extern short GetAsyncKeyState(int vKey);
+
+        private void WaitForModifierKeysRelease()
+        {
+            const int VK_SHIFT = 0x10, VK_CONTROL = 0x11, VK_MENU = 0x12;
+            const int VK_LWIN = 0x5B, VK_RWIN = 0x5C;
+            int waited = 0;
+            while (waited < 1000)
+            {
+                bool anyHeld =
+                    (GetAsyncKeyState(VK_SHIFT) & 0x8000) != 0 ||
+                    (GetAsyncKeyState(VK_CONTROL) & 0x8000) != 0 ||
+                    (GetAsyncKeyState(VK_MENU) & 0x8000) != 0 ||
+                    (GetAsyncKeyState(VK_LWIN) & 0x8000) != 0 ||
+                    (GetAsyncKeyState(VK_RWIN) & 0x8000) != 0;
+                if (!anyHeld) break;
+                Thread.Sleep(10);
+                waited += 10;
+            }
+        }
+
         private System.Drawing.Icon CreateDefaultIcon()
         {
             // Create a simple icon programmatically using a bitmap
@@ -202,6 +224,10 @@ namespace KeyboardLayoutFixer
 
             try
             {
+                // Wait for user to release modifier keys (Ctrl, Alt, etc.)
+                // so SendKeys doesn't conflict with physically held keys
+                WaitForModifierKeysRelease();
+
                 // Store original clipboard content
                 string originalClipboard = "";
                 try
@@ -218,7 +244,6 @@ namespace KeyboardLayoutFixer
                 }
 
                 // Clear clipboard before Ctrl+C so we can reliably detect if text was selected
-                Thread.Sleep(50);
                 Clipboard.Clear();
                 Thread.Sleep(50);
 
