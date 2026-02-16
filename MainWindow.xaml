@@ -1,0 +1,139 @@
+<Window x:Class="KeyboardLayoutFixer.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="Keyboard Layout Fixer - Settings"
+        Height="450" Width="500"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize"
+        ShowInTaskbar="False"
+        Closing="Window_Closing">
+
+    <Window.Resources>
+        <Style TargetType="GroupBox">
+            <Setter Property="Margin" Value="10,5"/>
+            <Setter Property="Padding" Value="10"/>
+        </Style>
+        <Style TargetType="TextBlock">
+            <Setter Property="Margin" Value="0,5"/>
+        </Style>
+        <Style TargetType="Button">
+            <Setter Property="Padding" Value="15,5"/>
+            <Setter Property="Margin" Value="5"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+                <!-- Hotkey Configuration -->
+                <GroupBox Header="Global Hotkey" Grid.Row="0">
+                    <StackPanel>
+                        <TextBlock Text="Press the hotkey combination below to trigger text conversion:"
+                                   TextWrapping="Wrap"/>
+
+                        <Border BorderBrush="Gray" BorderThickness="1"
+                                Background="White" Margin="0,10" Padding="10">
+                            <TextBlock x:Name="HotkeyDisplay"
+                                       Text="Ctrl+Q"
+                                       FontSize="16"
+                                       FontWeight="Bold"
+                                       HorizontalAlignment="Center"/>
+                        </Border>
+
+                        <TextBlock Text="Modifier Keys:" FontWeight="SemiBold" Margin="0,10,0,5"/>
+
+                        <StackPanel Orientation="Horizontal">
+                            <CheckBox x:Name="CtrlCheckBox" Content="Ctrl" Margin="5"/>
+                            <CheckBox x:Name="AltCheckBox" Content="Alt" Margin="5"/>
+                            <CheckBox x:Name="ShiftCheckBox" Content="Shift" Margin="5"/>
+                            <CheckBox x:Name="WinCheckBox" Content="Win" Margin="5"/>
+                        </StackPanel>
+
+                        <TextBlock Text="Key:" FontWeight="SemiBold" Margin="0,10,0,5"/>
+                        <ComboBox x:Name="KeyComboBox" Margin="0,5"
+                                  SelectionChanged="KeyComboBox_SelectionChanged"/>
+                    </StackPanel>
+                </GroupBox>
+
+                <!-- Character Limit -->
+                <GroupBox Header="Character Limit">
+                    <StackPanel>
+                        <TextBlock Text="Maximum number of characters to process (0 = unlimited):"
+                                   TextWrapping="Wrap"/>
+                        <TextBlock Text="If the text exceeds this limit, the conversion will be aborted."
+                                   FontSize="11" Foreground="Gray" TextWrapping="Wrap"/>
+
+                        <DockPanel Margin="0,10">
+                            <TextBlock DockPanel.Dock="Left" Text="Limit:"
+                                       VerticalAlignment="Center" Margin="0,0,10,0"/>
+                            <TextBox x:Name="CharLimitTextBox"
+                                     Text="0"
+                                     Width="100"
+                                     HorizontalAlignment="Left"
+                                     PreviewTextInput="NumericTextBox_PreviewTextInput"/>
+                        </DockPanel>
+                    </StackPanel>
+                </GroupBox>
+
+                <!-- Mixed Text Mode -->
+                <GroupBox Header="Mixed Text Handling">
+                    <StackPanel>
+                        <TextBlock Text="Choose how to handle text containing both Hebrew and English:"
+                                   TextWrapping="Wrap" Margin="0,0,0,10"/>
+
+                        <RadioButton x:Name="ToggleAllRadio"
+                                     Content="Toggle All"
+                                     GroupName="MixedMode"
+                                     Margin="5"/>
+                        <TextBlock Text="Convert English → Hebrew AND Hebrew → English simultaneously"
+                                   FontSize="11" Foreground="Gray" Margin="20,0,0,10"/>
+
+                        <RadioButton x:Name="EnglishToHebrewRadio"
+                                     Content="English to Hebrew Only"
+                                     GroupName="MixedMode"
+                                     Margin="5"/>
+                        <TextBlock Text="Convert only English characters, leave Hebrew unchanged"
+                                   FontSize="11" Foreground="Gray" Margin="20,0,0,10"/>
+
+                        <RadioButton x:Name="HebrewToEnglishRadio"
+                                     Content="Hebrew to English Only"
+                                     GroupName="MixedMode"
+                                     Margin="5"/>
+                        <TextBlock Text="Convert only Hebrew characters, leave English unchanged"
+                                   FontSize="11" Foreground="Gray" Margin="20,0,0,10"/>
+                    </StackPanel>
+                </GroupBox>
+
+                <!-- Info -->
+                <GroupBox Header="How It Works">
+                    <StackPanel>
+                        <TextBlock TextWrapping="Wrap">
+                            <Run Text="1. Select text (or leave nothing selected to convert entire textbox)"/>
+                            <LineBreak/>
+                            <Run Text="2. Press the hotkey"/>
+                            <LineBreak/>
+                            <Run Text="3. The text will be automatically converted and replaced"/>
+                        </TextBlock>
+                    </StackPanel>
+                </GroupBox>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Action Buttons -->
+        <Border Grid.Row="1" BorderBrush="LightGray" BorderThickness="0,1,0,0"
+                Background="#F5F5F5" Padding="10">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="Save" Click="SaveButton_Click" IsDefault="True"/>
+                <Button Content="Cancel" Click="CancelButton_Click" IsCancel="True"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>
