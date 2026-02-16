@@ -94,6 +94,17 @@
                     </StackPanel>
                 </GroupBox>
 
+                <!-- Auto Switch Language -->
+                <GroupBox Header="Auto Switch Language">
+                    <StackPanel>
+                        <CheckBox x:Name="SwitchLanguageCheckBox"
+                                  Content="Switch keyboard language after conversion"
+                                  Margin="5"/>
+                        <TextBlock Text="Automatically presses Alt+Shift after converting text, so your keyboard switches to the correct language for the converted text"
+                                   FontSize="11" Foreground="Gray" Margin="20,0,0,5" TextWrapping="Wrap"/>
+                    </StackPanel>
+                </GroupBox>
+
                 <!-- Mixed Text Mode -->
                 <GroupBox Header="Mixed Text Handling">
                     <StackPanel>

@@ -71,6 +71,9 @@ namespace KeyboardLayoutFixer
             // Load replace caps
             ReplaceCapsCheckBox.IsChecked = settings.ReplaceCaps;
 
+            // Load switch language after convert
+            SwitchLanguageCheckBox.IsChecked = settings.SwitchLanguageAfterConvert;
+
             // Load mixed text mode
             switch (settings.MixedTextMode)
             {
@@ -155,6 +158,9 @@ namespace KeyboardLayoutFixer
 
                 // Save replace caps
                 settings.ReplaceCaps = ReplaceCapsCheckBox.IsChecked.GetValueOrDefault();
+
+                // Save switch language after convert
+                settings.SwitchLanguageAfterConvert = SwitchLanguageCheckBox.IsChecked.GetValueOrDefault();
 
                 // Save mixed text mode
                 if (ToggleAllRadio.IsChecked.GetValueOrDefault())

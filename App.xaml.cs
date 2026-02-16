@@ -264,6 +264,13 @@ namespace KeyboardLayoutFixer
                 SendKeys.SendWait("^v");
                 Thread.Sleep(50);
 
+                // Switch keyboard language if enabled
+                if (settings.SwitchLanguageAfterConvert)
+                {
+                    Thread.Sleep(50);
+                    SendKeys.SendWait("%+");
+                }
+
                 // Restore original clipboard content
                 RestoreClipboard(originalClipboard);
             }

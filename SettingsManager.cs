@@ -107,6 +107,11 @@ namespace KeyboardLayoutFixer
         public bool ReplaceCaps { get; set; } = true;
 
         /// <summary>
+        /// Whether to automatically switch keyboard language (Alt+Shift) after conversion
+        /// </summary>
+        public bool SwitchLanguageAfterConvert { get; set; } = false;
+
+        /// <summary>
         /// Gets a human-readable description of the hotkey
         /// </summary>
         [JsonIgnore]
