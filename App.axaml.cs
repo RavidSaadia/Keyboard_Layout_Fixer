@@ -13,13 +13,14 @@ namespace KeyboardLayoutFixer
 {
     public partial class App : Application
     {
-        public const string AppVersion = "1.2.1";
+        public const string AppVersion = "1.2.7";
 
         private static Mutex? _mutex;
         private IPlatformServices? _platformServices;
         private SettingsManager _settingsManager = new();
         private KeyboardLayoutConverter _converter = new();
         private MainWindow? _settingsWindow;
+        private bool _isEnabled = true;
 
         public override void Initialize()
         {
@@ -49,6 +50,11 @@ namespace KeyboardLayoutFixer
                     // Register global hotkey
                     RegisterHotkey();
                     LogDebug("Hotkey registration attempted");
+
+                    // Update tray icon tooltip with version
+                    var trayIcons = TrayIcon.GetIcons(this);
+                    if (trayIcons?.Count > 0)
+                        trayIcons[0].ToolTipText = $"Keyboard Layout Fixer v{AppVersion}";
 
                     // Tray-only app: no main window, shutdown only on explicit request
                     desktop.ShutdownMode = ShutdownMode.OnExplicitShutdown;
@@ -98,6 +104,12 @@ namespace KeyboardLayoutFixer
 
         private async void OnHotkeyPressed()
         {
+            if (!_isEnabled)
+            {
+                LogDebug("Hotkey pressed but app is disabled, ignoring");
+                return;
+            }
+
             LogDebug("===== HOTKEY PRESSED =====");
 
             try
@@ -217,6 +229,21 @@ namespace KeyboardLayoutFixer
             ShowSettings();
         }
 
+        private void Toggle_Click(object? sender, EventArgs e)
+        {
+            _isEnabled = !_isEnabled;
+            if (sender is NativeMenuItem menuItem)
+            {
+                menuItem.Header = _isEnabled ? "Disable" : "Enable";
+            }
+            LogDebug($"App {(_isEnabled ? "enabled" : "disabled")}");
+        }
+
+        private void Restart_Click(object? sender, EventArgs e)
+        {
+            RestartApplication();
+        }
+
         private void Exit_Click(object? sender, EventArgs e)
         {
             ExitApplication();
@@ -240,6 +267,16 @@ namespace KeyboardLayoutFixer
         {
             UnregisterHotkey();
             RegisterHotkey();
+        }
+
+        private void RestartApplication()
+        {
+            var exePath = Environment.ProcessPath;
+            if (exePath != null)
+            {
+                System.Diagnostics.Process.Start(exePath);
+            }
+            ExitApplication();
         }
 
         private void ExitApplication()

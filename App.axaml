@@ -52,6 +52,8 @@
                     <NativeMenu>
                         <NativeMenuItem Header="Settings" Click="Settings_Click"/>
                         <NativeMenuItemSeparator/>
+                        <NativeMenuItem Header="Disable" Click="Toggle_Click"/>
+                        <NativeMenuItem Header="Restart" Click="Restart_Click"/>
                         <NativeMenuItem Header="Exit" Click="Exit_Click"/>
                     </NativeMenu>
                 </TrayIcon.Menu>

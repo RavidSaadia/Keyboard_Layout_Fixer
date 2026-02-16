@@ -159,6 +159,12 @@
                                           Content="Switch keyboard language after conversion" Margin="0,0,0,2"/>
                                 <TextBlock Text="Automatically presses Alt+Shift after converting text, so your keyboard switches to the correct language"
                                            FontSize="12" Foreground="{StaticResource MutedBlueGrayBrush}"
+                                           Margin="30,0,0,16" TextWrapping="Wrap"/>
+
+                                <CheckBox x:Name="RunAtStartupCheckBox"
+                                          Content="Run at Windows startup" Margin="0,0,0,2"/>
+                                <TextBlock Text="Automatically start the application when you log in to Windows"
+                                           FontSize="12" Foreground="{StaticResource MutedBlueGrayBrush}"
                                            Margin="30,0,0,0" TextWrapping="Wrap"/>
                             </StackPanel>
                         </Border>

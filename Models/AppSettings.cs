@@ -38,6 +38,11 @@ namespace KeyboardLayoutFixer.Models
         public bool SwitchLanguageAfterConvert { get; set; } = false;
 
         /// <summary>
+        /// Whether to start the application automatically when Windows starts
+        /// </summary>
+        public bool RunAtStartup { get; set; } = false;
+
+        /// <summary>
         /// Validates settings and resets invalid values to defaults
         /// </summary>
         public void Validate()

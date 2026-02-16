@@ -3,6 +3,7 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using KeyboardLayoutFixer.Models;
 using KeyboardLayoutFixer.Services;
+using Microsoft.Win32;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Enums;
 using System.Text.RegularExpressions;
@@ -86,6 +87,7 @@ namespace KeyboardLayoutFixer.Views
             CharLimitTextBox.Text = settings.MaxCharacterLimit.ToString();
             ReplaceCapsCheckBox.IsChecked = settings.ReplaceCaps;
             SwitchLanguageCheckBox.IsChecked = settings.SwitchLanguageAfterConvert;
+            RunAtStartupCheckBox.IsChecked = settings.RunAtStartup;
 
             switch (settings.MixedTextMode)
             {
@@ -163,6 +165,8 @@ namespace KeyboardLayoutFixer.Views
 
                 settings.ReplaceCaps = ReplaceCapsCheckBox.IsChecked.GetValueOrDefault();
                 settings.SwitchLanguageAfterConvert = SwitchLanguageCheckBox.IsChecked.GetValueOrDefault();
+                settings.RunAtStartup = RunAtStartupCheckBox.IsChecked.GetValueOrDefault();
+                ApplyRunAtStartup(settings.RunAtStartup);
 
                 if (ToggleAllRadio.IsChecked.GetValueOrDefault())
                     settings.MixedTextMode = MixedTextMode.ToggleAll;
@@ -264,6 +268,29 @@ namespace KeyboardLayoutFixer.Views
         private void CloseButton_Click(object? sender, RoutedEventArgs e)
         {
             this.Hide();
+        }
+
+        private static void ApplyRunAtStartup(bool enable)
+        {
+            try
+            {
+                using var key = Registry.CurrentUser.OpenSubKey(
+                    @"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", true);
+                if (key == null) return;
+
+                const string appName = "KeyboardLayoutFixer";
+                if (enable)
+                {
+                    var exePath = Environment.ProcessPath;
+                    if (exePath != null)
+                        key.SetValue(appName, $"\"{exePath}\"");
+                }
+                else
+                {
+                    key.DeleteValue(appName, false);
+                }
+            }
+            catch { }
         }
     }
 }
