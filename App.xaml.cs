@@ -18,6 +18,9 @@ namespace KeyboardLayoutFixer
     /// </summary>
     public partial class App : Application
     {
+        public const string AppVersion = "1.0.0";
+
+        private static Mutex? _mutex;
         private NotifyIcon? _notifyIcon;
         private GlobalHotkey? _hotkey;
         private SettingsManager _settingsManager;
@@ -35,6 +38,10 @@ namespace KeyboardLayoutFixer
             try
             {
                 LogDebug("Application starting...");
+
+                // Close any existing instances before starting
+                CloseExistingInstances();
+                _mutex = new Mutex(true, "KeyboardLayoutFixer_SingleInstance");
 
                 // Load settings
                 _settingsManager.LoadSettings();
@@ -89,7 +96,7 @@ namespace KeyboardLayoutFixer
             {
                 Icon = CreateDefaultIcon(),
                 Visible = true,
-                Text = "Keyboard Layout Fixer"
+                Text = $"Keyboard Layout Fixer v{AppVersion}\nHotkey: {_settingsManager.Settings.HotkeyDescription}"
             };
 
             // Create context menu
@@ -115,10 +122,13 @@ namespace KeyboardLayoutFixer
             _notifyIcon.ShowBalloonTip(3000);
         }
 
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        private static extern bool DestroyIcon(IntPtr handle);
+
         private System.Drawing.Icon CreateDefaultIcon()
         {
             // Create a simple icon programmatically using a bitmap
-            var bitmap = new System.Drawing.Bitmap(32, 32);
+            using var bitmap = new System.Drawing.Bitmap(32, 32);
             using (var graphics = System.Drawing.Graphics.FromImage(bitmap))
             {
                 // Draw a simple colored square with text
@@ -132,9 +142,11 @@ namespace KeyboardLayoutFixer
                 }
             }
 
-            // Convert bitmap to icon
+            // Convert bitmap to icon, clone to own the handle, then clean up
             var iconHandle = bitmap.GetHicon();
-            var icon = System.Drawing.Icon.FromHandle(iconHandle);
+            using var tempIcon = System.Drawing.Icon.FromHandle(iconHandle);
+            var icon = (System.Drawing.Icon)tempIcon.Clone();
+            DestroyIcon(iconHandle);
             return icon;
         }
 
@@ -198,7 +210,9 @@ namespace KeyboardLayoutFixer
                     System.Diagnostics.Debug.WriteLine($"[DEBUG] Error reading clipboard: {ex.Message}");
                 }
 
-                // Small delay to ensure the clipboard operation works
+                // Clear clipboard before Ctrl+C so we can reliably detect if text was selected
+                Thread.Sleep(50);
+                Clipboard.Clear();
                 Thread.Sleep(50);
 
                 // Send Ctrl+C to copy selected text (or nothing if no selection)
@@ -206,16 +220,15 @@ namespace KeyboardLayoutFixer
                 Thread.Sleep(100);
 
                 string capturedText = "";
-                bool hasSelection = false;
+                bool hasSelection = Clipboard.ContainsText();
 
-                if (Clipboard.ContainsText())
+                if (hasSelection)
                 {
                     capturedText = Clipboard.GetText();
-                    hasSelection = capturedText != originalClipboard;
                 }
 
                 // If no selection, select all and copy
-                if (!hasSelection || string.IsNullOrEmpty(capturedText))
+                if (!hasSelection)
                 {
                     SendKeys.SendWait("^a");
                     Thread.Sleep(50);
@@ -262,7 +275,7 @@ namespace KeyboardLayoutFixer
 
                 // Paste the converted text
                 SendKeys.SendWait("^v");
-                Thread.Sleep(50);
+                Thread.Sleep(300);
 
                 // Switch keyboard language if enabled
                 if (settings.SwitchLanguageAfterConvert)
@@ -324,10 +337,32 @@ namespace KeyboardLayoutFixer
             Application.Current.Shutdown();
         }
 
+        private static void CloseExistingInstances()
+        {
+            var currentProcess = System.Diagnostics.Process.GetCurrentProcess();
+            var existingProcesses = System.Diagnostics.Process.GetProcessesByName(currentProcess.ProcessName);
+
+            foreach (var process in existingProcesses)
+            {
+                if (process.Id != currentProcess.Id)
+                {
+                    try
+                    {
+                        process.Kill();
+                        process.WaitForExit(3000);
+                    }
+                    catch { }
+                }
+                process.Dispose();
+            }
+        }
+
         private void Application_Exit(object sender, ExitEventArgs e)
         {
             UnregisterHotkey();
             _notifyIcon?.Dispose();
+            _mutex?.ReleaseMutex();
+            _mutex?.Dispose();
         }
     }
 }

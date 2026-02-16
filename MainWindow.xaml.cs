@@ -19,6 +19,7 @@ namespace KeyboardLayoutFixer
             InitializeComponent();
             _settingsManager = settingsManager;
 
+            VersionText.Text = $"v{App.AppVersion}";
             InitializeKeyComboBox();
             LoadSettings();
 

@@ -11,6 +11,7 @@ namespace KeyboardLayoutFixer
     {
         private const string SETTINGS_FILENAME = "settings.json";
         private readonly string _settingsPath;
+        private readonly object _lock = new object();
 
         public AppSettings Settings { get; private set; }
 
@@ -31,33 +32,45 @@ namespace KeyboardLayoutFixer
         /// </summary>
         public void LoadSettings()
         {
-            try
+            lock (_lock)
             {
-                if (File.Exists(_settingsPath))
+                try
                 {
-                    string json = File.ReadAllText(_settingsPath);
-                    var loaded = JsonConvert.DeserializeObject<AppSettings>(json);
-                    if (loaded != null)
+                    if (File.Exists(_settingsPath))
                     {
-                        Settings = loaded;
-                        return;
+                        string json = File.ReadAllText(_settingsPath);
+                        var loaded = JsonConvert.DeserializeObject<AppSettings>(json);
+                        if (loaded != null)
+                        {
+                            loaded.Validate();
+                            Settings = loaded;
+                            return;
+                        }
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Error loading settings: {ex.Message}");
-            }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Error loading settings: {ex.Message}");
+                }
 
-            // If loading failed or file doesn't exist, use defaults
-            Settings = new AppSettings();
-            SaveSettings();
+                // If loading failed or file doesn't exist, use defaults
+                Settings = new AppSettings();
+                SaveSettingsInternal();
+            }
         }
 
         /// <summary>
         /// Saves current settings to disk
         /// </summary>
         public void SaveSettings()
+        {
+            lock (_lock)
+            {
+                SaveSettingsInternal();
+            }
+        }
+
+        private void SaveSettingsInternal()
         {
             try
             {
@@ -110,6 +123,17 @@ namespace KeyboardLayoutFixer
         /// Whether to automatically switch keyboard language (Alt+Shift) after conversion
         /// </summary>
         public bool SwitchLanguageAfterConvert { get; set; } = false;
+
+        /// <summary>
+        /// Validates settings and resets invalid values to defaults
+        /// </summary>
+        public void Validate()
+        {
+            if (HotkeyModifiers == ModifierKeys.None)
+            {
+                HotkeyModifiers = ModifierKeys.Control;
+            }
+        }
 
         /// <summary>
         /// Gets a human-readable description of the hotkey
