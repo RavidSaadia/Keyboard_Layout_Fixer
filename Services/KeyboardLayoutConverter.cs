@@ -1,6 +1,7 @@
 using System.Text;
+using KeyboardLayoutFixer.Models;
 
-namespace KeyboardLayoutFixer
+namespace KeyboardLayoutFixer.Services
 {
     /// <summary>
     /// Converts text between English and Hebrew keyboard layouts
@@ -68,9 +69,6 @@ namespace KeyboardLayoutFixer
         /// <summary>
         /// Converts text based on the specified mode
         /// </summary>
-        /// <param name="text">Text to convert</param>
-        /// <param name="mode">Conversion mode</param>
-        /// <returns>Converted text</returns>
         public string Convert(string text, MixedTextMode mode, bool replaceCaps = true)
         {
             if (string.IsNullOrEmpty(text))
@@ -92,7 +90,6 @@ namespace KeyboardLayoutFixer
                 switch (mode)
                 {
                     case MixedTextMode.ToggleAll:
-                        // Try both directions
                         if (_englishToHebrew.TryGetValue(c, out char hebrewChar))
                         {
                             converted = hebrewChar;
@@ -104,7 +101,6 @@ namespace KeyboardLayoutFixer
                         break;
 
                     case MixedTextMode.EnglishToHebrewOnly:
-                        // Only convert English to Hebrew, leave Hebrew as-is
                         if (_englishToHebrew.TryGetValue(c, out char hebChar))
                         {
                             converted = hebChar;
@@ -112,7 +108,6 @@ namespace KeyboardLayoutFixer
                         break;
 
                     case MixedTextMode.HebrewToEnglishOnly:
-                        // Only convert Hebrew to English, leave English as-is
                         if (_hebrewToEnglish.TryGetValue(c, out char engChar))
                         {
                             converted = engChar;
@@ -149,26 +144,5 @@ namespace KeyboardLayoutFixer
         {
             return ContainsHebrew(text) && ContainsEnglish(text);
         }
-    }
-
-    /// <summary>
-    /// Modes for handling text that contains both Hebrew and English characters
-    /// </summary>
-    public enum MixedTextMode
-    {
-        /// <summary>
-        /// Toggle both English to Hebrew AND Hebrew to English
-        /// </summary>
-        ToggleAll,
-
-        /// <summary>
-        /// Convert only English to Hebrew, leave Hebrew characters unchanged
-        /// </summary>
-        EnglishToHebrewOnly,
-
-        /// <summary>
-        /// Convert only Hebrew to English, leave English characters unchanged
-        /// </summary>
-        HebrewToEnglishOnly
     }
 }

@@ -1,8 +1,8 @@
 using Newtonsoft.Json;
 using System.IO;
-using System.Windows.Input;
+using KeyboardLayoutFixer.Models;
 
-namespace KeyboardLayoutFixer
+namespace KeyboardLayoutFixer.Services
 {
     /// <summary>
     /// Manages application settings and persistence
@@ -17,7 +17,10 @@ namespace KeyboardLayoutFixer
 
         public SettingsManager()
         {
-            // Store settings in AppData folder
+            // Store settings in AppData folder (cross-platform)
+            // Windows: %APPDATA%\KeyboardLayoutFixer\
+            // macOS: ~/Library/Application Support/KeyboardLayoutFixer/
+            // Linux: ~/.config/KeyboardLayoutFixer/
             string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
             string appFolder = Path.Combine(appDataPath, "KeyboardLayoutFixer");
             Directory.CreateDirectory(appFolder);
@@ -87,77 +90,5 @@ namespace KeyboardLayoutFixer
         /// Gets the settings file path
         /// </summary>
         public string GetSettingsPath() => _settingsPath;
-    }
-
-    /// <summary>
-    /// Application settings data class
-    /// </summary>
-    public class AppSettings
-    {
-        /// <summary>
-        /// Modifier keys for the global hotkey (Ctrl, Alt, Shift, Win)
-        /// </summary>
-        public ModifierKeys HotkeyModifiers { get; set; } = ModifierKeys.Control;
-
-        /// <summary>
-        /// The key for the global hotkey
-        /// </summary>
-        public Key HotkeyKey { get; set; } = Key.Q;
-
-        /// <summary>
-        /// Maximum number of characters to process (0 = unlimited)
-        /// </summary>
-        public int MaxCharacterLimit { get; set; } = 0;
-
-        /// <summary>
-        /// How to handle text that contains both Hebrew and English
-        /// </summary>
-        public MixedTextMode MixedTextMode { get; set; } = MixedTextMode.ToggleAll;
-
-        /// <summary>
-        /// Whether to convert uppercase (CAPS) letters or leave them as-is
-        /// </summary>
-        public bool ReplaceCaps { get; set; } = true;
-
-        /// <summary>
-        /// Whether to automatically switch keyboard language (Alt+Shift) after conversion
-        /// </summary>
-        public bool SwitchLanguageAfterConvert { get; set; } = false;
-
-        /// <summary>
-        /// Validates settings and resets invalid values to defaults
-        /// </summary>
-        public void Validate()
-        {
-            if (HotkeyModifiers == ModifierKeys.None)
-            {
-                HotkeyModifiers = ModifierKeys.Control;
-            }
-        }
-
-        /// <summary>
-        /// Gets a human-readable description of the hotkey
-        /// </summary>
-        [JsonIgnore]
-        public string HotkeyDescription
-        {
-            get
-            {
-                var parts = new List<string>();
-
-                if (HotkeyModifiers.HasFlag(ModifierKeys.Control))
-                    parts.Add("Ctrl");
-                if (HotkeyModifiers.HasFlag(ModifierKeys.Alt))
-                    parts.Add("Alt");
-                if (HotkeyModifiers.HasFlag(ModifierKeys.Shift))
-                    parts.Add("Shift");
-                if (HotkeyModifiers.HasFlag(ModifierKeys.Win))
-                    parts.Add("Win");
-
-                parts.Add(HotkeyKey.ToString());
-
-                return string.Join("+", parts);
-            }
-        }
     }
 }

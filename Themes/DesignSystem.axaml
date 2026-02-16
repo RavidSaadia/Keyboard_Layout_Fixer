@@ -1,0 +1,207 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- ==================== RESOURCES ==================== -->
+    <Styles.Resources>
+        <SolidColorBrush x:Key="BodyTextBrush" Color="#1D1D1F"/>
+        <SolidColorBrush x:Key="AccentRedBrush" Color="#EC012D"/>
+        <SolidColorBrush x:Key="BorderGrayBrush" Color="#E0E0E5"/>
+        <SolidColorBrush x:Key="MutedBlueGrayBrush" Color="#8899BB"/>
+
+        <LinearGradientBrush x:Key="ButtonGradientBrush" StartPoint="0%,50%" EndPoint="100%,50%">
+            <GradientStop Color="#EB002C" Offset="0.01"/>
+            <GradientStop Color="#FF6E1E" Offset="1.0"/>
+        </LinearGradientBrush>
+
+        <LinearGradientBrush x:Key="ButtonGradientHoverBrush" StartPoint="0%,50%" EndPoint="100%,50%">
+            <GradientStop Color="#D00028" Offset="0.01"/>
+            <GradientStop Color="#E8601A" Offset="1.0"/>
+        </LinearGradientBrush>
+    </Styles.Resources>
+
+    <!-- ==================== CHECKBOX ==================== -->
+    <Style Selector="CheckBox">
+        <Setter Property="Foreground" Value="{StaticResource BodyTextBrush}"/>
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Margin" Value="0,4"/>
+        <Setter Property="Template">
+            <ControlTemplate>
+                <StackPanel Orientation="Horizontal">
+                    <Border x:Name="checkBorder" Width="20" Height="20"
+                            CornerRadius="5" BorderThickness="1.5"
+                            BorderBrush="{StaticResource BorderGrayBrush}"
+                            Background="White" VerticalAlignment="Center">
+                        <Path x:Name="checkMark"
+                              Data="M4,10 L8,14 L16,5"
+                              Stroke="White" StrokeThickness="2"
+                              IsVisible="False" Stretch="Uniform"
+                              Width="12" Height="12"
+                              VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                    </Border>
+                    <ContentPresenter Name="PART_ContentPresenter"
+                                      Content="{TemplateBinding Content}"
+                                      Margin="10,0,0,0" VerticalAlignment="Center"/>
+                </StackPanel>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+
+    <!-- CheckBox checked state -->
+    <Style Selector="CheckBox:checked /template/ Border#checkBorder">
+        <Setter Property="Background" Value="{StaticResource ButtonGradientBrush}"/>
+        <Setter Property="BorderBrush" Value="Transparent"/>
+    </Style>
+    <Style Selector="CheckBox:checked /template/ Path#checkMark">
+        <Setter Property="IsVisible" Value="True"/>
+    </Style>
+
+    <!-- CheckBox hover when unchecked -->
+    <Style Selector="CheckBox:pointerover:not(:checked) /template/ Border#checkBorder">
+        <Setter Property="BorderBrush" Value="{StaticResource AccentRedBrush}"/>
+    </Style>
+
+    <!-- ==================== RADIOBUTTON ==================== -->
+    <Style Selector="RadioButton">
+        <Setter Property="Foreground" Value="{StaticResource BodyTextBrush}"/>
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Margin" Value="0,4"/>
+        <Setter Property="Template">
+            <ControlTemplate>
+                <StackPanel Orientation="Horizontal">
+                    <Border x:Name="radioBorder" Width="20" Height="20"
+                            CornerRadius="10" BorderThickness="1.5"
+                            BorderBrush="{StaticResource BorderGrayBrush}"
+                            Background="White" VerticalAlignment="Center">
+                        <Ellipse x:Name="radioMark" Width="10" Height="10"
+                                 Fill="{StaticResource ButtonGradientBrush}"
+                                 IsVisible="False"
+                                 VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                    </Border>
+                    <ContentPresenter Name="PART_ContentPresenter"
+                                      Content="{TemplateBinding Content}"
+                                      Margin="10,0,0,0" VerticalAlignment="Center"/>
+                </StackPanel>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+
+    <!-- RadioButton checked state -->
+    <Style Selector="RadioButton:checked /template/ Border#radioBorder">
+        <Setter Property="BorderBrush" Value="{StaticResource AccentRedBrush}"/>
+    </Style>
+    <Style Selector="RadioButton:checked /template/ Ellipse#radioMark">
+        <Setter Property="IsVisible" Value="True"/>
+    </Style>
+
+    <!-- RadioButton hover when unchecked -->
+    <Style Selector="RadioButton:pointerover:not(:checked) /template/ Border#radioBorder">
+        <Setter Property="BorderBrush" Value="{StaticResource AccentRedBrush}"/>
+    </Style>
+
+    <!-- ==================== TEXTBOX ==================== -->
+    <Style Selector="TextBox.custom">
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="Foreground" Value="{StaticResource BodyTextBrush}"/>
+        <Setter Property="Background" Value="White"/>
+        <Setter Property="Padding" Value="12,8"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BorderGrayBrush}"/>
+        <Setter Property="CaretBrush" Value="{StaticResource AccentRedBrush}"/>
+        <Setter Property="SelectionBrush" Value="{StaticResource AccentRedBrush}"/>
+        <Setter Property="CornerRadius" Value="6"/>
+    </Style>
+
+    <Style Selector="TextBox.custom:pointerover">
+        <Setter Property="BorderBrush" Value="#C0C0C8"/>
+    </Style>
+
+    <Style Selector="TextBox.custom:focus">
+        <Setter Property="BorderBrush" Value="{StaticResource AccentRedBrush}"/>
+        <Setter Property="BorderThickness" Value="1.5"/>
+    </Style>
+
+    <!-- ==================== COMBOBOX ==================== -->
+    <Style Selector="ComboBox.custom">
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="Foreground" Value="{StaticResource BodyTextBrush}"/>
+        <Setter Property="Height" Value="38"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BorderGrayBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="6"/>
+        <Setter Property="Background" Value="White"/>
+    </Style>
+
+    <Style Selector="ComboBox.custom:pointerover">
+        <Setter Property="BorderBrush" Value="#C0C0C8"/>
+    </Style>
+
+    <Style Selector="ComboBox.custom:focus">
+        <Setter Property="BorderBrush" Value="{StaticResource AccentRedBrush}"/>
+    </Style>
+
+    <!-- ==================== BUTTONS ==================== -->
+
+    <!-- Primary CTA Button (Gradient) -->
+    <Style Selector="Button.primary">
+        <Setter Property="Background" Value="{StaticResource ButtonGradientBrush}"/>
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="FontWeight" Value="700"/>
+        <Setter Property="Padding" Value="28,9"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="CornerRadius" Value="20"/>
+    </Style>
+
+    <Style Selector="Button.primary:pointerover">
+        <Setter Property="Background" Value="{StaticResource ButtonGradientHoverBrush}"/>
+    </Style>
+
+    <Style Selector="Button.primary:pressed">
+        <Setter Property="Opacity" Value="0.85"/>
+    </Style>
+
+    <!-- Secondary/Outlined Button -->
+    <Style Selector="Button.secondary">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="FontWeight" Value="600"/>
+        <Setter Property="Padding" Value="28,9"/>
+        <Setter Property="BorderThickness" Value="1.5"/>
+        <Setter Property="BorderBrush" Value="#6680AA"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="CornerRadius" Value="20"/>
+    </Style>
+
+    <Style Selector="Button.secondary:pointerover">
+        <Setter Property="BorderBrush" Value="White"/>
+        <Setter Property="Foreground" Value="White"/>
+    </Style>
+
+    <Style Selector="Button.secondary:pressed">
+        <Setter Property="Opacity" Value="0.85"/>
+    </Style>
+
+    <!-- Window Close Button -->
+    <Style Selector="Button.closeBtn">
+        <Setter Property="Width" Value="46"/>
+        <Setter Property="Height" Value="36"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground" Value="{StaticResource MutedBlueGrayBrush}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="FontSize" Value="15"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="CornerRadius" Value="0,8,0,0"/>
+        <Setter Property="Padding" Value="0"/>
+    </Style>
+
+    <Style Selector="Button.closeBtn:pointerover">
+        <Setter Property="Background" Value="#E81123"/>
+        <Setter Property="Foreground" Value="White"/>
+    </Style>
+
+</Styles>

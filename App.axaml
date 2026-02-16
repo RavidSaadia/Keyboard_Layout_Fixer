@@ -1,0 +1,62 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="KeyboardLayoutFixer.App">
+
+    <Application.Styles>
+        <FluentTheme />
+        <StyleInclude Source="avares://KeyboardLayoutFixer/Themes/DesignSystem.axaml"/>
+    </Application.Styles>
+
+    <Application.Resources>
+        <!-- Colors -->
+        <Color x:Key="PrimaryRed">#EB002C</Color>
+        <Color x:Key="PrimaryOrange">#FF6E1E</Color>
+        <Color x:Key="DarkNavy">#001446</Color>
+        <Color x:Key="BodyTextColor">#1D1D1F</Color>
+        <Color x:Key="AccentRed">#EC012D</Color>
+        <Color x:Key="SurfaceColor">#FAFBFC</Color>
+        <Color x:Key="BorderGray">#E0E0E5</Color>
+        <Color x:Key="MutedBlueGray">#8899BB</Color>
+
+        <!-- Brushes -->
+        <LinearGradientBrush x:Key="PrimaryGradientBrush" StartPoint="0%,50%" EndPoint="100%,50%">
+            <GradientStop Color="#EB002C" Offset="0.01"/>
+            <GradientStop Color="#FF6E1E" Offset="0.67"/>
+        </LinearGradientBrush>
+
+        <LinearGradientBrush x:Key="ButtonGradientBrush" StartPoint="0%,50%" EndPoint="100%,50%">
+            <GradientStop Color="#EB002C" Offset="0.01"/>
+            <GradientStop Color="#FF6E1E" Offset="1.0"/>
+        </LinearGradientBrush>
+
+        <LinearGradientBrush x:Key="ButtonGradientHoverBrush" StartPoint="0%,50%" EndPoint="100%,50%">
+            <GradientStop Color="#D00028" Offset="0.01"/>
+            <GradientStop Color="#E8601A" Offset="1.0"/>
+        </LinearGradientBrush>
+
+        <SolidColorBrush x:Key="DarkNavyBrush" Color="#001446"/>
+        <SolidColorBrush x:Key="BodyTextBrush" Color="#1D1D1F"/>
+        <SolidColorBrush x:Key="AccentRedBrush" Color="#EC012D"/>
+        <SolidColorBrush x:Key="WhiteBrush" Color="White"/>
+        <SolidColorBrush x:Key="SurfaceBrush" Color="#FAFBFC"/>
+        <SolidColorBrush x:Key="BorderGrayBrush" Color="#E0E0E5"/>
+        <SolidColorBrush x:Key="MutedBlueGrayBrush" Color="#8899BB"/>
+    </Application.Resources>
+
+    <TrayIcon.Icons>
+        <TrayIcons>
+            <TrayIcon Icon="avares://KeyboardLayoutFixer/Assets/tray-icon.ico"
+                      ToolTipText="Keyboard Layout Fixer"
+                      Clicked="TrayIcon_Clicked">
+                <TrayIcon.Menu>
+                    <NativeMenu>
+                        <NativeMenuItem Header="Settings" Click="Settings_Click"/>
+                        <NativeMenuItemSeparator/>
+                        <NativeMenuItem Header="Exit" Click="Exit_Click"/>
+                    </NativeMenu>
+                </TrayIcon.Menu>
+            </TrayIcon>
+        </TrayIcons>
+    </TrayIcon.Icons>
+
+</Application>

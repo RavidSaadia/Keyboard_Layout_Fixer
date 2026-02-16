@@ -1,85 +1,69 @@
-<Window x:Class="KeyboardLayoutFixer.MainWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+<Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d"
+        x:Class="KeyboardLayoutFixer.Views.MainWindow"
         Title="Keyboard Layout Fixer - Settings"
         Height="720" Width="520"
         WindowStartupLocation="CenterScreen"
-        ResizeMode="NoResize"
+        CanResize="False"
         ShowInTaskbar="False"
-        WindowStyle="None"
-        AllowsTransparency="True"
+        SystemDecorations="None"
+        TransparencyLevelHint="Transparent"
         Background="Transparent"
         Closing="Window_Closing">
 
-    <Border Margin="10" CornerRadius="12" Background="White" ClipToBounds="False">
-        <Border.Effect>
-            <DropShadowEffect BlurRadius="24" ShadowDepth="4" Opacity="0.18"
-                              Color="{StaticResource DarkNavy}" Direction="270"/>
-        </Border.Effect>
+    <Border Margin="10" CornerRadius="12" Background="White"
+            BoxShadow="0 4 24 0 #30001446">
 
         <Border CornerRadius="12" ClipToBounds="True">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="3"/>
-                    <RowDefinition Height="56"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="62"/>
-                </Grid.RowDefinitions>
+            <Grid RowDefinitions="3,56,*,62">
 
-                <!-- ===== ROW 0: Gradient Accent Bar ===== -->
+                <!-- ROW 0: Gradient Accent Bar -->
                 <Border Grid.Row="0" Background="{StaticResource PrimaryGradientBrush}"/>
 
-                <!-- ===== ROW 1: Title Bar ===== -->
+                <!-- ROW 1: Title Bar -->
                 <Border Grid.Row="1" Background="{StaticResource DarkNavyBrush}"
-                        MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
+                        PointerPressed="TitleBar_PointerPressed">
                     <DockPanel LastChildFill="True">
                         <!-- Close Button -->
-                        <Button DockPanel.Dock="Right" Style="{StaticResource CloseButton}"
-                                Click="CloseButton_Click" VerticalAlignment="Top" Margin="0,0,0,0"/>
+                        <Button DockPanel.Dock="Right" Classes="closeBtn"
+                                Click="CloseButton_Click" VerticalAlignment="Top">
+                            <TextBlock Text="&#x2715;" FontSize="12"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Button>
 
                         <!-- Logo + Title -->
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="18,0,0,0">
-                            <!-- App Icon Badge -->
                             <Border Width="34" Height="34" CornerRadius="8"
                                     Background="{StaticResource PrimaryGradientBrush}">
                                 <TextBlock Text="KB" Foreground="White"
-                                           FontFamily="{StaticResource PrimaryFont}"
-                                           FontSize="13" FontWeight="Bold"
+                                           FontSize="13" FontWeight="700"
                                            HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Border>
 
-                            <!-- Title Text -->
                             <StackPanel VerticalAlignment="Center" Margin="12,0,0,0">
                                 <TextBlock Text="Keyboard Layout Fixer" Foreground="White"
-                                           FontFamily="{StaticResource PrimaryFont}"
-                                           FontSize="15" FontWeight="SemiBold"/>
+                                           FontSize="15" FontWeight="600"/>
                                 <TextBlock Text="Settings" Foreground="{StaticResource MutedBlueGrayBrush}"
-                                           FontFamily="{StaticResource PrimaryFont}"
                                            FontSize="11.5" Margin="0,-1,0,0"/>
                             </StackPanel>
                         </StackPanel>
                     </DockPanel>
                 </Border>
 
-                <!-- ===== ROW 2: Main Content ===== -->
-                <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto"
-                              Background="{StaticResource SurfaceBrush}"
+                <!-- ROW 2: Main Content -->
+                <ScrollViewer Grid.Row="2" Background="{StaticResource SurfaceBrush}"
                               Padding="0,12,0,12">
                     <StackPanel>
 
-                        <!-- ===== GLOBAL HOTKEY CARD ===== -->
-                        <Border Style="{StaticResource SettingsCard}">
+                        <!-- GLOBAL HOTKEY CARD -->
+                        <Border Background="White" CornerRadius="10" Padding="24" Margin="20,8"
+                                BoxShadow="0 2 16 0 #10001446">
                             <StackPanel>
-                                <TextBlock FontSize="17" FontWeight="SemiBold"
-                                           FontFamily="{StaticResource PrimaryFont}"
-                                           Margin="0,0,0,12">
+                                <TextBlock FontSize="17" FontWeight="600" Margin="0,0,0,12">
                                     <TextBlock.Foreground>
-                                        <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5">
-                                            <GradientStop Color="{StaticResource PrimaryRed}" Offset="0.01"/>
-                                            <GradientStop Color="{StaticResource PrimaryOrange}" Offset="0.67"/>
+                                        <LinearGradientBrush StartPoint="0%,50%" EndPoint="100%,50%">
+                                            <GradientStop Color="#EB002C" Offset="0.01"/>
+                                            <GradientStop Color="#FF6E1E" Offset="0.67"/>
                                         </LinearGradientBrush>
                                     </TextBlock.Foreground>
                                     Global Hotkey
@@ -88,7 +72,6 @@
                                 <TextBlock Text="Press the hotkey combination below to trigger text conversion:"
                                            TextWrapping="Wrap" FontSize="13.5"
                                            Foreground="{StaticResource BodyTextBrush}"
-                                           FontFamily="{StaticResource PrimaryFont}"
                                            Margin="0,0,0,16"/>
 
                                 <!-- Hotkey Badge -->
@@ -96,16 +79,13 @@
                                         CornerRadius="20" Padding="28,10"
                                         HorizontalAlignment="Center" Margin="0,0,0,20">
                                     <TextBlock x:Name="HotkeyDisplay" Text="Ctrl+Q"
-                                               Foreground="White" FontSize="18" FontWeight="Bold"
-                                               FontFamily="{StaticResource PrimaryFont}"
+                                               Foreground="White" FontSize="18" FontWeight="700"
                                                HorizontalAlignment="Center"/>
                                 </Border>
 
                                 <!-- Modifier Keys -->
-                                <TextBlock Text="Modifier Keys" FontWeight="SemiBold" FontSize="13"
-                                           Foreground="{StaticResource DarkNavyBrush}"
-                                           FontFamily="{StaticResource PrimaryFont}"
-                                           Margin="0,0,0,10"/>
+                                <TextBlock Text="Modifier Keys" FontWeight="600" FontSize="13"
+                                           Foreground="{StaticResource DarkNavyBrush}" Margin="0,0,0,10"/>
 
                                 <WrapPanel Margin="0,0,0,16">
                                     <CheckBox x:Name="CtrlCheckBox" Content="Ctrl" Margin="0,4,20,4"/>
@@ -115,26 +95,23 @@
                                 </WrapPanel>
 
                                 <!-- Key Selection -->
-                                <TextBlock Text="Key" FontWeight="SemiBold" FontSize="13"
-                                           Foreground="{StaticResource DarkNavyBrush}"
-                                           FontFamily="{StaticResource PrimaryFont}"
-                                           Margin="0,0,0,8"/>
-                                <ComboBox x:Name="KeyComboBox"
+                                <TextBlock Text="Key" FontWeight="600" FontSize="13"
+                                           Foreground="{StaticResource DarkNavyBrush}" Margin="0,0,0,8"/>
+                                <ComboBox x:Name="KeyComboBox" Classes="custom"
                                           SelectionChanged="KeyComboBox_SelectionChanged"
                                           MaxDropDownHeight="200"/>
                             </StackPanel>
                         </Border>
 
-                        <!-- ===== CHARACTER LIMIT CARD ===== -->
-                        <Border Style="{StaticResource SettingsCard}">
+                        <!-- CHARACTER LIMIT CARD -->
+                        <Border Background="White" CornerRadius="10" Padding="24" Margin="20,8"
+                                BoxShadow="0 2 16 0 #10001446">
                             <StackPanel>
-                                <TextBlock FontSize="17" FontWeight="SemiBold"
-                                           FontFamily="{StaticResource PrimaryFont}"
-                                           Margin="0,0,0,12">
+                                <TextBlock FontSize="17" FontWeight="600" Margin="0,0,0,12">
                                     <TextBlock.Foreground>
-                                        <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5">
-                                            <GradientStop Color="{StaticResource PrimaryRed}" Offset="0.01"/>
-                                            <GradientStop Color="{StaticResource PrimaryOrange}" Offset="0.67"/>
+                                        <LinearGradientBrush StartPoint="0%,50%" EndPoint="100%,50%">
+                                            <GradientStop Color="#EB002C" Offset="0.01"/>
+                                            <GradientStop Color="#FF6E1E" Offset="0.67"/>
                                         </LinearGradientBrush>
                                     </TextBlock.Foreground>
                                     Character Limit
@@ -142,69 +119,59 @@
 
                                 <TextBlock Text="Maximum number of characters to process (0 = unlimited):"
                                            TextWrapping="Wrap" FontSize="13.5"
-                                           Foreground="{StaticResource BodyTextBrush}"
-                                           FontFamily="{StaticResource PrimaryFont}"/>
+                                           Foreground="{StaticResource BodyTextBrush}"/>
                                 <TextBlock Text="If the text exceeds this limit, the conversion will be aborted."
                                            FontSize="12" Foreground="{StaticResource MutedBlueGrayBrush}"
-                                           FontFamily="{StaticResource PrimaryFont}"
                                            TextWrapping="Wrap" Margin="0,2,0,14"/>
 
                                 <DockPanel>
                                     <TextBlock DockPanel.Dock="Left" Text="Limit:"
                                                VerticalAlignment="Center" Margin="0,0,12,0"
-                                               FontSize="13.5" FontWeight="SemiBold"
-                                               Foreground="{StaticResource DarkNavyBrush}"
-                                               FontFamily="{StaticResource PrimaryFont}"/>
-                                    <TextBox x:Name="CharLimitTextBox" Text="0"
-                                             Width="120" HorizontalAlignment="Left"
-                                             PreviewTextInput="NumericTextBox_PreviewTextInput"/>
+                                               FontSize="13.5" FontWeight="600"
+                                               Foreground="{StaticResource DarkNavyBrush}"/>
+                                    <TextBox x:Name="CharLimitTextBox" Classes="custom" Text="0"
+                                             Width="120" HorizontalAlignment="Left"/>
                                 </DockPanel>
                             </StackPanel>
                         </Border>
 
-                        <!-- ===== BEHAVIOR CARD ===== -->
-                        <Border Style="{StaticResource SettingsCard}">
+                        <!-- BEHAVIOR CARD -->
+                        <Border Background="White" CornerRadius="10" Padding="24" Margin="20,8"
+                                BoxShadow="0 2 16 0 #10001446">
                             <StackPanel>
-                                <TextBlock FontSize="17" FontWeight="SemiBold"
-                                           FontFamily="{StaticResource PrimaryFont}"
-                                           Margin="0,0,0,14">
+                                <TextBlock FontSize="17" FontWeight="600" Margin="0,0,0,14">
                                     <TextBlock.Foreground>
-                                        <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5">
-                                            <GradientStop Color="{StaticResource PrimaryRed}" Offset="0.01"/>
-                                            <GradientStop Color="{StaticResource PrimaryOrange}" Offset="0.67"/>
+                                        <LinearGradientBrush StartPoint="0%,50%" EndPoint="100%,50%">
+                                            <GradientStop Color="#EB002C" Offset="0.01"/>
+                                            <GradientStop Color="#FF6E1E" Offset="0.67"/>
                                         </LinearGradientBrush>
                                     </TextBlock.Foreground>
                                     Behavior
                                 </TextBlock>
 
                                 <CheckBox x:Name="ReplaceCapsCheckBox"
-                                          Content="Convert uppercase (CAPS) letters"
-                                          Margin="0,0,0,2"/>
+                                          Content="Convert uppercase (CAPS) letters" Margin="0,0,0,2"/>
                                 <TextBlock Text="When disabled, uppercase letters (A-Z) will be left as-is and only lowercase letters will be converted"
                                            FontSize="12" Foreground="{StaticResource MutedBlueGrayBrush}"
-                                           FontFamily="{StaticResource PrimaryFont}"
                                            Margin="30,0,0,16" TextWrapping="Wrap"/>
 
                                 <CheckBox x:Name="SwitchLanguageCheckBox"
-                                          Content="Switch keyboard language after conversion"
-                                          Margin="0,0,0,2"/>
+                                          Content="Switch keyboard language after conversion" Margin="0,0,0,2"/>
                                 <TextBlock Text="Automatically presses Alt+Shift after converting text, so your keyboard switches to the correct language"
                                            FontSize="12" Foreground="{StaticResource MutedBlueGrayBrush}"
-                                           FontFamily="{StaticResource PrimaryFont}"
                                            Margin="30,0,0,0" TextWrapping="Wrap"/>
                             </StackPanel>
                         </Border>
 
-                        <!-- ===== MIXED TEXT HANDLING CARD ===== -->
-                        <Border Style="{StaticResource SettingsCard}">
+                        <!-- MIXED TEXT HANDLING CARD -->
+                        <Border Background="White" CornerRadius="10" Padding="24" Margin="20,8"
+                                BoxShadow="0 2 16 0 #10001446">
                             <StackPanel>
-                                <TextBlock FontSize="17" FontWeight="SemiBold"
-                                           FontFamily="{StaticResource PrimaryFont}"
-                                           Margin="0,0,0,8">
+                                <TextBlock FontSize="17" FontWeight="600" Margin="0,0,0,8">
                                     <TextBlock.Foreground>
-                                        <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5">
-                                            <GradientStop Color="{StaticResource PrimaryRed}" Offset="0.01"/>
-                                            <GradientStop Color="{StaticResource PrimaryOrange}" Offset="0.67"/>
+                                        <LinearGradientBrush StartPoint="0%,50%" EndPoint="100%,50%">
+                                            <GradientStop Color="#EB002C" Offset="0.01"/>
+                                            <GradientStop Color="#FF6E1E" Offset="0.67"/>
                                         </LinearGradientBrush>
                                     </TextBlock.Foreground>
                                     Mixed Text Handling
@@ -212,89 +179,74 @@
 
                                 <TextBlock Text="Choose how to handle text containing both Hebrew and English:"
                                            TextWrapping="Wrap" FontSize="13.5"
-                                           Foreground="{StaticResource BodyTextBrush}"
-                                           FontFamily="{StaticResource PrimaryFont}"
-                                           Margin="0,0,0,14"/>
+                                           Foreground="{StaticResource BodyTextBrush}" Margin="0,0,0,14"/>
 
                                 <RadioButton x:Name="ToggleAllRadio"
-                                             Content="Toggle All" GroupName="MixedMode"
-                                             Margin="0,0,0,2"/>
+                                             Content="Toggle All" GroupName="MixedMode" Margin="0,0,0,2"/>
                                 <TextBlock Text="Convert English &#x2192; Hebrew AND Hebrew &#x2192; English simultaneously"
                                            FontSize="12" Foreground="{StaticResource MutedBlueGrayBrush}"
-                                           FontFamily="{StaticResource PrimaryFont}"
                                            Margin="30,0,0,12" TextWrapping="Wrap"/>
 
                                 <RadioButton x:Name="EnglishToHebrewRadio"
-                                             Content="English to Hebrew Only" GroupName="MixedMode"
-                                             Margin="0,0,0,2"/>
+                                             Content="English to Hebrew Only" GroupName="MixedMode" Margin="0,0,0,2"/>
                                 <TextBlock Text="Convert only English characters, leave Hebrew unchanged"
                                            FontSize="12" Foreground="{StaticResource MutedBlueGrayBrush}"
-                                           FontFamily="{StaticResource PrimaryFont}"
                                            Margin="30,0,0,12" TextWrapping="Wrap"/>
 
                                 <RadioButton x:Name="HebrewToEnglishRadio"
-                                             Content="Hebrew to English Only" GroupName="MixedMode"
-                                             Margin="0,0,0,2"/>
+                                             Content="Hebrew to English Only" GroupName="MixedMode" Margin="0,0,0,2"/>
                                 <TextBlock Text="Convert only Hebrew characters, leave English unchanged"
                                            FontSize="12" Foreground="{StaticResource MutedBlueGrayBrush}"
-                                           FontFamily="{StaticResource PrimaryFont}"
                                            Margin="30,0,0,0" TextWrapping="Wrap"/>
                             </StackPanel>
                         </Border>
 
-                        <!-- ===== HOW IT WORKS CARD ===== -->
-                        <Border Style="{StaticResource InfoCard}" Margin="20,8,20,20">
+                        <!-- HOW IT WORKS CARD -->
+                        <Border Background="#F7F8FA" CornerRadius="10" Padding="24" Margin="20,8,20,20"
+                                BoxShadow="0 2 16 0 #10001446">
                             <StackPanel>
-                                <TextBlock FontSize="17" FontWeight="SemiBold"
-                                           FontFamily="{StaticResource PrimaryFont}"
-                                           Margin="0,0,0,14">
+                                <TextBlock FontSize="17" FontWeight="600" Margin="0,0,0,14">
                                     <TextBlock.Foreground>
-                                        <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5">
-                                            <GradientStop Color="{StaticResource PrimaryRed}" Offset="0.01"/>
-                                            <GradientStop Color="{StaticResource PrimaryOrange}" Offset="0.67"/>
+                                        <LinearGradientBrush StartPoint="0%,50%" EndPoint="100%,50%">
+                                            <GradientStop Color="#EB002C" Offset="0.01"/>
+                                            <GradientStop Color="#FF6E1E" Offset="0.67"/>
                                         </LinearGradientBrush>
                                     </TextBlock.Foreground>
                                     How It Works
                                 </TextBlock>
 
-                                <StackPanel Margin="0,0,0,0">
+                                <StackPanel>
                                     <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
                                         <Border Width="26" Height="26" CornerRadius="13"
                                                 Background="{StaticResource PrimaryGradientBrush}" Margin="0,0,12,0">
                                             <TextBlock Text="1" Foreground="White" FontSize="13"
-                                                       FontWeight="Bold" FontFamily="{StaticResource PrimaryFont}"
+                                                       FontWeight="700"
                                                        HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                         </Border>
                                         <TextBlock Text="Select text (or leave nothing selected to convert entire textbox)"
                                                    TextWrapping="Wrap" FontSize="13.5" VerticalAlignment="Center"
-                                                   Foreground="{StaticResource BodyTextBrush}"
-                                                   FontFamily="{StaticResource PrimaryFont}"
-                                                   MaxWidth="370"/>
+                                                   Foreground="{StaticResource BodyTextBrush}" MaxWidth="370"/>
                                     </StackPanel>
                                     <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
                                         <Border Width="26" Height="26" CornerRadius="13"
                                                 Background="{StaticResource PrimaryGradientBrush}" Margin="0,0,12,0">
                                             <TextBlock Text="2" Foreground="White" FontSize="13"
-                                                       FontWeight="Bold" FontFamily="{StaticResource PrimaryFont}"
+                                                       FontWeight="700"
                                                        HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                         </Border>
                                         <TextBlock Text="Press the hotkey" VerticalAlignment="Center"
-                                                   FontSize="13.5"
-                                                   Foreground="{StaticResource BodyTextBrush}"
-                                                   FontFamily="{StaticResource PrimaryFont}"/>
+                                                   FontSize="13.5" Foreground="{StaticResource BodyTextBrush}"/>
                                     </StackPanel>
                                     <StackPanel Orientation="Horizontal">
                                         <Border Width="26" Height="26" CornerRadius="13"
                                                 Background="{StaticResource PrimaryGradientBrush}" Margin="0,0,12,0">
                                             <TextBlock Text="3" Foreground="White" FontSize="13"
-                                                       FontWeight="Bold" FontFamily="{StaticResource PrimaryFont}"
+                                                       FontWeight="700"
                                                        HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                         </Border>
                                         <TextBlock Text="The text will be automatically converted and replaced"
                                                    TextWrapping="Wrap" FontSize="13.5" VerticalAlignment="Center"
-                                                   Foreground="{StaticResource BodyTextBrush}"
-                                                   FontFamily="{StaticResource PrimaryFont}"
-                                                   MaxWidth="370"/>
+                                                   Foreground="{StaticResource BodyTextBrush}" MaxWidth="370"/>
                                     </StackPanel>
                                 </StackPanel>
                             </StackPanel>
@@ -303,23 +255,21 @@
                     </StackPanel>
                 </ScrollViewer>
 
-                <!-- ===== ROW 3: Footer ===== -->
+                <!-- ROW 3: Footer -->
                 <Border Grid.Row="3" Background="{StaticResource DarkNavyBrush}"
                         CornerRadius="0,0,12,12">
                     <DockPanel Margin="20,0">
-                        <!-- Version -->
                         <TextBlock x:Name="VersionText" DockPanel.Dock="Left"
                                    VerticalAlignment="Center"
                                    Foreground="{StaticResource MutedBlueGrayBrush}"
-                                   FontSize="12" FontFamily="{StaticResource PrimaryFont}"/>
+                                   FontSize="12"/>
 
-                        <!-- Action Buttons -->
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right"
                                     VerticalAlignment="Center">
-                            <Button Content="Cancel" Style="{StaticResource SecondaryButton}"
-                                    Click="CancelButton_Click" IsCancel="True" Margin="0,0,10,0"/>
-                            <Button Content="Save" Style="{StaticResource PrimaryButton}"
-                                    Click="SaveButton_Click" IsDefault="True"/>
+                            <Button Content="Cancel" Classes="secondary"
+                                    Click="CancelButton_Click" Margin="0,0,10,0"/>
+                            <Button Content="Save" Classes="primary"
+                                    Click="SaveButton_Click"/>
                         </StackPanel>
                     </DockPanel>
                 </Border>
