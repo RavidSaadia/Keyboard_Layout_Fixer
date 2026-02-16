@@ -18,7 +18,7 @@ namespace KeyboardLayoutFixer
     /// </summary>
     public partial class App : Application
     {
-        public const string AppVersion = "1.0.0";
+        public const string AppVersion = "1.1.0";
 
         private static Mutex? _mutex;
         private NotifyIcon? _notifyIcon;
@@ -131,8 +131,15 @@ namespace KeyboardLayoutFixer
             using var bitmap = new System.Drawing.Bitmap(32, 32);
             using (var graphics = System.Drawing.Graphics.FromImage(bitmap))
             {
-                // Draw a simple colored square with text
-                graphics.Clear(System.Drawing.Color.FromArgb(0, 120, 215)); // Windows blue
+                // Draw with design system gradient (red to orange)
+                using (var gradientBrush = new System.Drawing.Drawing2D.LinearGradientBrush(
+                    new System.Drawing.Rectangle(0, 0, 32, 32),
+                    System.Drawing.Color.FromArgb(235, 0, 44),   // #EB002C
+                    System.Drawing.Color.FromArgb(255, 110, 30), // #FF6E1E
+                    System.Drawing.Drawing2D.LinearGradientMode.Horizontal))
+                {
+                    graphics.FillRectangle(gradientBrush, 0, 0, 32, 32);
+                }
 
                 // Draw "KB" text in white
                 using (var font = new System.Drawing.Font("Arial", 14, System.Drawing.FontStyle.Bold))

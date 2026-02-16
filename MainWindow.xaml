@@ -5,161 +5,326 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         Title="Keyboard Layout Fixer - Settings"
-        Height="450" Width="500"
+        Height="720" Width="520"
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize"
         ShowInTaskbar="False"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
         Closing="Window_Closing">
 
-    <Window.Resources>
-        <Style TargetType="GroupBox">
-            <Setter Property="Margin" Value="10,5"/>
-            <Setter Property="Padding" Value="10"/>
-        </Style>
-        <Style TargetType="TextBlock">
-            <Setter Property="Margin" Value="0,5"/>
-        </Style>
-        <Style TargetType="Button">
-            <Setter Property="Padding" Value="15,5"/>
-            <Setter Property="Margin" Value="5"/>
-        </Style>
-    </Window.Resources>
+    <Border Margin="10" CornerRadius="12" Background="White" ClipToBounds="False">
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="24" ShadowDepth="4" Opacity="0.18"
+                              Color="{StaticResource DarkNavy}" Direction="270"/>
+        </Border.Effect>
 
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
+        <Border CornerRadius="12" ClipToBounds="True">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="3"/>
+                    <RowDefinition Height="56"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="62"/>
+                </Grid.RowDefinitions>
 
-        <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
-            <StackPanel>
-                <!-- Hotkey Configuration -->
-                <GroupBox Header="Global Hotkey" Grid.Row="0">
+                <!-- ===== ROW 0: Gradient Accent Bar ===== -->
+                <Border Grid.Row="0" Background="{StaticResource PrimaryGradientBrush}"/>
+
+                <!-- ===== ROW 1: Title Bar ===== -->
+                <Border Grid.Row="1" Background="{StaticResource DarkNavyBrush}"
+                        MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
+                    <DockPanel LastChildFill="True">
+                        <!-- Close Button -->
+                        <Button DockPanel.Dock="Right" Style="{StaticResource CloseButton}"
+                                Click="CloseButton_Click" VerticalAlignment="Top" Margin="0,0,0,0"/>
+
+                        <!-- Logo + Title -->
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="18,0,0,0">
+                            <!-- App Icon Badge -->
+                            <Border Width="34" Height="34" CornerRadius="8"
+                                    Background="{StaticResource PrimaryGradientBrush}">
+                                <TextBlock Text="KB" Foreground="White"
+                                           FontFamily="{StaticResource PrimaryFont}"
+                                           FontSize="13" FontWeight="Bold"
+                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+
+                            <!-- Title Text -->
+                            <StackPanel VerticalAlignment="Center" Margin="12,0,0,0">
+                                <TextBlock Text="Keyboard Layout Fixer" Foreground="White"
+                                           FontFamily="{StaticResource PrimaryFont}"
+                                           FontSize="15" FontWeight="SemiBold"/>
+                                <TextBlock Text="Settings" Foreground="{StaticResource MutedBlueGrayBrush}"
+                                           FontFamily="{StaticResource PrimaryFont}"
+                                           FontSize="11.5" Margin="0,-1,0,0"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </DockPanel>
+                </Border>
+
+                <!-- ===== ROW 2: Main Content ===== -->
+                <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto"
+                              Background="{StaticResource SurfaceBrush}"
+                              Padding="0,12,0,12">
                     <StackPanel>
-                        <TextBlock Text="Press the hotkey combination below to trigger text conversion:"
-                                   TextWrapping="Wrap"/>
 
-                        <Border BorderBrush="Gray" BorderThickness="1"
-                                Background="White" Margin="0,10" Padding="10">
-                            <TextBlock x:Name="HotkeyDisplay"
-                                       Text="Ctrl+Q"
-                                       FontSize="16"
-                                       FontWeight="Bold"
-                                       HorizontalAlignment="Center"/>
+                        <!-- ===== GLOBAL HOTKEY CARD ===== -->
+                        <Border Style="{StaticResource SettingsCard}">
+                            <StackPanel>
+                                <TextBlock FontSize="17" FontWeight="SemiBold"
+                                           FontFamily="{StaticResource PrimaryFont}"
+                                           Margin="0,0,0,12">
+                                    <TextBlock.Foreground>
+                                        <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5">
+                                            <GradientStop Color="{StaticResource PrimaryRed}" Offset="0.01"/>
+                                            <GradientStop Color="{StaticResource PrimaryOrange}" Offset="0.67"/>
+                                        </LinearGradientBrush>
+                                    </TextBlock.Foreground>
+                                    Global Hotkey
+                                </TextBlock>
+
+                                <TextBlock Text="Press the hotkey combination below to trigger text conversion:"
+                                           TextWrapping="Wrap" FontSize="13.5"
+                                           Foreground="{StaticResource BodyTextBrush}"
+                                           FontFamily="{StaticResource PrimaryFont}"
+                                           Margin="0,0,0,16"/>
+
+                                <!-- Hotkey Badge -->
+                                <Border Background="{StaticResource PrimaryGradientBrush}"
+                                        CornerRadius="20" Padding="28,10"
+                                        HorizontalAlignment="Center" Margin="0,0,0,20">
+                                    <TextBlock x:Name="HotkeyDisplay" Text="Ctrl+Q"
+                                               Foreground="White" FontSize="18" FontWeight="Bold"
+                                               FontFamily="{StaticResource PrimaryFont}"
+                                               HorizontalAlignment="Center"/>
+                                </Border>
+
+                                <!-- Modifier Keys -->
+                                <TextBlock Text="Modifier Keys" FontWeight="SemiBold" FontSize="13"
+                                           Foreground="{StaticResource DarkNavyBrush}"
+                                           FontFamily="{StaticResource PrimaryFont}"
+                                           Margin="0,0,0,10"/>
+
+                                <WrapPanel Margin="0,0,0,16">
+                                    <CheckBox x:Name="CtrlCheckBox" Content="Ctrl" Margin="0,4,20,4"/>
+                                    <CheckBox x:Name="AltCheckBox" Content="Alt" Margin="0,4,20,4"/>
+                                    <CheckBox x:Name="ShiftCheckBox" Content="Shift" Margin="0,4,20,4"/>
+                                    <CheckBox x:Name="WinCheckBox" Content="Win" Margin="0,4,0,4"/>
+                                </WrapPanel>
+
+                                <!-- Key Selection -->
+                                <TextBlock Text="Key" FontWeight="SemiBold" FontSize="13"
+                                           Foreground="{StaticResource DarkNavyBrush}"
+                                           FontFamily="{StaticResource PrimaryFont}"
+                                           Margin="0,0,0,8"/>
+                                <ComboBox x:Name="KeyComboBox"
+                                          SelectionChanged="KeyComboBox_SelectionChanged"
+                                          MaxDropDownHeight="200"/>
+                            </StackPanel>
                         </Border>
 
-                        <TextBlock Text="Modifier Keys:" FontWeight="SemiBold" Margin="0,10,0,5"/>
+                        <!-- ===== CHARACTER LIMIT CARD ===== -->
+                        <Border Style="{StaticResource SettingsCard}">
+                            <StackPanel>
+                                <TextBlock FontSize="17" FontWeight="SemiBold"
+                                           FontFamily="{StaticResource PrimaryFont}"
+                                           Margin="0,0,0,12">
+                                    <TextBlock.Foreground>
+                                        <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5">
+                                            <GradientStop Color="{StaticResource PrimaryRed}" Offset="0.01"/>
+                                            <GradientStop Color="{StaticResource PrimaryOrange}" Offset="0.67"/>
+                                        </LinearGradientBrush>
+                                    </TextBlock.Foreground>
+                                    Character Limit
+                                </TextBlock>
 
-                        <StackPanel Orientation="Horizontal">
-                            <CheckBox x:Name="CtrlCheckBox" Content="Ctrl" Margin="5"/>
-                            <CheckBox x:Name="AltCheckBox" Content="Alt" Margin="5"/>
-                            <CheckBox x:Name="ShiftCheckBox" Content="Shift" Margin="5"/>
-                            <CheckBox x:Name="WinCheckBox" Content="Win" Margin="5"/>
+                                <TextBlock Text="Maximum number of characters to process (0 = unlimited):"
+                                           TextWrapping="Wrap" FontSize="13.5"
+                                           Foreground="{StaticResource BodyTextBrush}"
+                                           FontFamily="{StaticResource PrimaryFont}"/>
+                                <TextBlock Text="If the text exceeds this limit, the conversion will be aborted."
+                                           FontSize="12" Foreground="{StaticResource MutedBlueGrayBrush}"
+                                           FontFamily="{StaticResource PrimaryFont}"
+                                           TextWrapping="Wrap" Margin="0,2,0,14"/>
+
+                                <DockPanel>
+                                    <TextBlock DockPanel.Dock="Left" Text="Limit:"
+                                               VerticalAlignment="Center" Margin="0,0,12,0"
+                                               FontSize="13.5" FontWeight="SemiBold"
+                                               Foreground="{StaticResource DarkNavyBrush}"
+                                               FontFamily="{StaticResource PrimaryFont}"/>
+                                    <TextBox x:Name="CharLimitTextBox" Text="0"
+                                             Width="120" HorizontalAlignment="Left"
+                                             PreviewTextInput="NumericTextBox_PreviewTextInput"/>
+                                </DockPanel>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- ===== BEHAVIOR CARD ===== -->
+                        <Border Style="{StaticResource SettingsCard}">
+                            <StackPanel>
+                                <TextBlock FontSize="17" FontWeight="SemiBold"
+                                           FontFamily="{StaticResource PrimaryFont}"
+                                           Margin="0,0,0,14">
+                                    <TextBlock.Foreground>
+                                        <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5">
+                                            <GradientStop Color="{StaticResource PrimaryRed}" Offset="0.01"/>
+                                            <GradientStop Color="{StaticResource PrimaryOrange}" Offset="0.67"/>
+                                        </LinearGradientBrush>
+                                    </TextBlock.Foreground>
+                                    Behavior
+                                </TextBlock>
+
+                                <CheckBox x:Name="ReplaceCapsCheckBox"
+                                          Content="Convert uppercase (CAPS) letters"
+                                          Margin="0,0,0,2"/>
+                                <TextBlock Text="When disabled, uppercase letters (A-Z) will be left as-is and only lowercase letters will be converted"
+                                           FontSize="12" Foreground="{StaticResource MutedBlueGrayBrush}"
+                                           FontFamily="{StaticResource PrimaryFont}"
+                                           Margin="30,0,0,16" TextWrapping="Wrap"/>
+
+                                <CheckBox x:Name="SwitchLanguageCheckBox"
+                                          Content="Switch keyboard language after conversion"
+                                          Margin="0,0,0,2"/>
+                                <TextBlock Text="Automatically presses Alt+Shift after converting text, so your keyboard switches to the correct language"
+                                           FontSize="12" Foreground="{StaticResource MutedBlueGrayBrush}"
+                                           FontFamily="{StaticResource PrimaryFont}"
+                                           Margin="30,0,0,0" TextWrapping="Wrap"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- ===== MIXED TEXT HANDLING CARD ===== -->
+                        <Border Style="{StaticResource SettingsCard}">
+                            <StackPanel>
+                                <TextBlock FontSize="17" FontWeight="SemiBold"
+                                           FontFamily="{StaticResource PrimaryFont}"
+                                           Margin="0,0,0,8">
+                                    <TextBlock.Foreground>
+                                        <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5">
+                                            <GradientStop Color="{StaticResource PrimaryRed}" Offset="0.01"/>
+                                            <GradientStop Color="{StaticResource PrimaryOrange}" Offset="0.67"/>
+                                        </LinearGradientBrush>
+                                    </TextBlock.Foreground>
+                                    Mixed Text Handling
+                                </TextBlock>
+
+                                <TextBlock Text="Choose how to handle text containing both Hebrew and English:"
+                                           TextWrapping="Wrap" FontSize="13.5"
+                                           Foreground="{StaticResource BodyTextBrush}"
+                                           FontFamily="{StaticResource PrimaryFont}"
+                                           Margin="0,0,0,14"/>
+
+                                <RadioButton x:Name="ToggleAllRadio"
+                                             Content="Toggle All" GroupName="MixedMode"
+                                             Margin="0,0,0,2"/>
+                                <TextBlock Text="Convert English &#x2192; Hebrew AND Hebrew &#x2192; English simultaneously"
+                                           FontSize="12" Foreground="{StaticResource MutedBlueGrayBrush}"
+                                           FontFamily="{StaticResource PrimaryFont}"
+                                           Margin="30,0,0,12" TextWrapping="Wrap"/>
+
+                                <RadioButton x:Name="EnglishToHebrewRadio"
+                                             Content="English to Hebrew Only" GroupName="MixedMode"
+                                             Margin="0,0,0,2"/>
+                                <TextBlock Text="Convert only English characters, leave Hebrew unchanged"
+                                           FontSize="12" Foreground="{StaticResource MutedBlueGrayBrush}"
+                                           FontFamily="{StaticResource PrimaryFont}"
+                                           Margin="30,0,0,12" TextWrapping="Wrap"/>
+
+                                <RadioButton x:Name="HebrewToEnglishRadio"
+                                             Content="Hebrew to English Only" GroupName="MixedMode"
+                                             Margin="0,0,0,2"/>
+                                <TextBlock Text="Convert only Hebrew characters, leave English unchanged"
+                                           FontSize="12" Foreground="{StaticResource MutedBlueGrayBrush}"
+                                           FontFamily="{StaticResource PrimaryFont}"
+                                           Margin="30,0,0,0" TextWrapping="Wrap"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- ===== HOW IT WORKS CARD ===== -->
+                        <Border Style="{StaticResource InfoCard}" Margin="20,8,20,20">
+                            <StackPanel>
+                                <TextBlock FontSize="17" FontWeight="SemiBold"
+                                           FontFamily="{StaticResource PrimaryFont}"
+                                           Margin="0,0,0,14">
+                                    <TextBlock.Foreground>
+                                        <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5">
+                                            <GradientStop Color="{StaticResource PrimaryRed}" Offset="0.01"/>
+                                            <GradientStop Color="{StaticResource PrimaryOrange}" Offset="0.67"/>
+                                        </LinearGradientBrush>
+                                    </TextBlock.Foreground>
+                                    How It Works
+                                </TextBlock>
+
+                                <StackPanel Margin="0,0,0,0">
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                                        <Border Width="26" Height="26" CornerRadius="13"
+                                                Background="{StaticResource PrimaryGradientBrush}" Margin="0,0,12,0">
+                                            <TextBlock Text="1" Foreground="White" FontSize="13"
+                                                       FontWeight="Bold" FontFamily="{StaticResource PrimaryFont}"
+                                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                        <TextBlock Text="Select text (or leave nothing selected to convert entire textbox)"
+                                                   TextWrapping="Wrap" FontSize="13.5" VerticalAlignment="Center"
+                                                   Foreground="{StaticResource BodyTextBrush}"
+                                                   FontFamily="{StaticResource PrimaryFont}"
+                                                   MaxWidth="370"/>
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                                        <Border Width="26" Height="26" CornerRadius="13"
+                                                Background="{StaticResource PrimaryGradientBrush}" Margin="0,0,12,0">
+                                            <TextBlock Text="2" Foreground="White" FontSize="13"
+                                                       FontWeight="Bold" FontFamily="{StaticResource PrimaryFont}"
+                                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                        <TextBlock Text="Press the hotkey" VerticalAlignment="Center"
+                                                   FontSize="13.5"
+                                                   Foreground="{StaticResource BodyTextBrush}"
+                                                   FontFamily="{StaticResource PrimaryFont}"/>
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Border Width="26" Height="26" CornerRadius="13"
+                                                Background="{StaticResource PrimaryGradientBrush}" Margin="0,0,12,0">
+                                            <TextBlock Text="3" Foreground="White" FontSize="13"
+                                                       FontWeight="Bold" FontFamily="{StaticResource PrimaryFont}"
+                                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                        <TextBlock Text="The text will be automatically converted and replaced"
+                                                   TextWrapping="Wrap" FontSize="13.5" VerticalAlignment="Center"
+                                                   Foreground="{StaticResource BodyTextBrush}"
+                                                   FontFamily="{StaticResource PrimaryFont}"
+                                                   MaxWidth="370"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+
+                    </StackPanel>
+                </ScrollViewer>
+
+                <!-- ===== ROW 3: Footer ===== -->
+                <Border Grid.Row="3" Background="{StaticResource DarkNavyBrush}"
+                        CornerRadius="0,0,12,12">
+                    <DockPanel Margin="20,0">
+                        <!-- Version -->
+                        <TextBlock x:Name="VersionText" DockPanel.Dock="Left"
+                                   VerticalAlignment="Center"
+                                   Foreground="{StaticResource MutedBlueGrayBrush}"
+                                   FontSize="12" FontFamily="{StaticResource PrimaryFont}"/>
+
+                        <!-- Action Buttons -->
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right"
+                                    VerticalAlignment="Center">
+                            <Button Content="Cancel" Style="{StaticResource SecondaryButton}"
+                                    Click="CancelButton_Click" IsCancel="True" Margin="0,0,10,0"/>
+                            <Button Content="Save" Style="{StaticResource PrimaryButton}"
+                                    Click="SaveButton_Click" IsDefault="True"/>
                         </StackPanel>
+                    </DockPanel>
+                </Border>
 
-                        <TextBlock Text="Key:" FontWeight="SemiBold" Margin="0,10,0,5"/>
-                        <ComboBox x:Name="KeyComboBox" Margin="0,5"
-                                  SelectionChanged="KeyComboBox_SelectionChanged"/>
-                    </StackPanel>
-                </GroupBox>
-
-                <!-- Character Limit -->
-                <GroupBox Header="Character Limit">
-                    <StackPanel>
-                        <TextBlock Text="Maximum number of characters to process (0 = unlimited):"
-                                   TextWrapping="Wrap"/>
-                        <TextBlock Text="If the text exceeds this limit, the conversion will be aborted."
-                                   FontSize="11" Foreground="Gray" TextWrapping="Wrap"/>
-
-                        <DockPanel Margin="0,10">
-                            <TextBlock DockPanel.Dock="Left" Text="Limit:"
-                                       VerticalAlignment="Center" Margin="0,0,10,0"/>
-                            <TextBox x:Name="CharLimitTextBox"
-                                     Text="0"
-                                     Width="100"
-                                     HorizontalAlignment="Left"
-                                     PreviewTextInput="NumericTextBox_PreviewTextInput"/>
-                        </DockPanel>
-                    </StackPanel>
-                </GroupBox>
-
-                <!-- Caps Handling -->
-                <GroupBox Header="Uppercase Letters">
-                    <StackPanel>
-                        <CheckBox x:Name="ReplaceCapsCheckBox"
-                                  Content="Convert uppercase (CAPS) letters"
-                                  Margin="5"/>
-                        <TextBlock Text="When disabled, uppercase letters (A-Z) will be left as-is and only lowercase letters will be converted"
-                                   FontSize="11" Foreground="Gray" Margin="20,0,0,5" TextWrapping="Wrap"/>
-                    </StackPanel>
-                </GroupBox>
-
-                <!-- Auto Switch Language -->
-                <GroupBox Header="Auto Switch Language">
-                    <StackPanel>
-                        <CheckBox x:Name="SwitchLanguageCheckBox"
-                                  Content="Switch keyboard language after conversion"
-                                  Margin="5"/>
-                        <TextBlock Text="Automatically presses Alt+Shift after converting text, so your keyboard switches to the correct language for the converted text"
-                                   FontSize="11" Foreground="Gray" Margin="20,0,0,5" TextWrapping="Wrap"/>
-                    </StackPanel>
-                </GroupBox>
-
-                <!-- Mixed Text Mode -->
-                <GroupBox Header="Mixed Text Handling">
-                    <StackPanel>
-                        <TextBlock Text="Choose how to handle text containing both Hebrew and English:"
-                                   TextWrapping="Wrap" Margin="0,0,0,10"/>
-
-                        <RadioButton x:Name="ToggleAllRadio"
-                                     Content="Toggle All"
-                                     GroupName="MixedMode"
-                                     Margin="5"/>
-                        <TextBlock Text="Convert English → Hebrew AND Hebrew → English simultaneously"
-                                   FontSize="11" Foreground="Gray" Margin="20,0,0,10"/>
-
-                        <RadioButton x:Name="EnglishToHebrewRadio"
-                                     Content="English to Hebrew Only"
-                                     GroupName="MixedMode"
-                                     Margin="5"/>
-                        <TextBlock Text="Convert only English characters, leave Hebrew unchanged"
-                                   FontSize="11" Foreground="Gray" Margin="20,0,0,10"/>
-
-                        <RadioButton x:Name="HebrewToEnglishRadio"
-                                     Content="Hebrew to English Only"
-                                     GroupName="MixedMode"
-                                     Margin="5"/>
-                        <TextBlock Text="Convert only Hebrew characters, leave English unchanged"
-                                   FontSize="11" Foreground="Gray" Margin="20,0,0,10"/>
-                    </StackPanel>
-                </GroupBox>
-
-                <!-- Info -->
-                <GroupBox Header="How It Works">
-                    <StackPanel>
-                        <TextBlock TextWrapping="Wrap">
-                            <Run Text="1. Select text (or leave nothing selected to convert entire textbox)"/>
-                            <LineBreak/>
-                            <Run Text="2. Press the hotkey"/>
-                            <LineBreak/>
-                            <Run Text="3. The text will be automatically converted and replaced"/>
-                        </TextBlock>
-                    </StackPanel>
-                </GroupBox>
-            </StackPanel>
-        </ScrollViewer>
-
-        <!-- Action Buttons -->
-        <Border Grid.Row="1" BorderBrush="LightGray" BorderThickness="0,1,0,0"
-                Background="#F5F5F5" Padding="10">
-            <DockPanel>
-                <TextBlock x:Name="VersionText" DockPanel.Dock="Left"
-                           VerticalAlignment="Center" Foreground="Gray" FontSize="11"/>
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Button Content="Save" Click="SaveButton_Click" IsDefault="True"/>
-                    <Button Content="Cancel" Click="CancelButton_Click" IsCancel="True"/>
-                </StackPanel>
-            </DockPanel>
+            </Grid>
         </Border>
-    </Grid>
+    </Border>
 </Window>
