@@ -245,7 +245,7 @@ namespace KeyboardLayoutFixer
 
                 // Convert text based on settings
                 System.Diagnostics.Debug.WriteLine($"[DEBUG] Captured text: '{capturedText}'");
-                string convertedText = _converter.Convert(capturedText, settings.MixedTextMode);
+                string convertedText = _converter.Convert(capturedText, settings.MixedTextMode, settings.ReplaceCaps);
                 System.Diagnostics.Debug.WriteLine($"[DEBUG] Converted text: '{convertedText}'");
 
                 // If text hasn't changed, don't replace

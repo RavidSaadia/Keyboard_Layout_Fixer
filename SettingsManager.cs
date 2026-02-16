@@ -102,6 +102,11 @@ namespace KeyboardLayoutFixer
         public MixedTextMode MixedTextMode { get; set; } = MixedTextMode.ToggleAll;
 
         /// <summary>
+        /// Whether to convert uppercase (CAPS) letters or leave them as-is
+        /// </summary>
+        public bool ReplaceCaps { get; set; } = true;
+
+        /// <summary>
         /// Gets a human-readable description of the hotkey
         /// </summary>
         [JsonIgnore]

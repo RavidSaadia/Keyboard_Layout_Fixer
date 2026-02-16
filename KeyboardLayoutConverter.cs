@@ -71,7 +71,7 @@ namespace KeyboardLayoutFixer
         /// <param name="text">Text to convert</param>
         /// <param name="mode">Conversion mode</param>
         /// <returns>Converted text</returns>
-        public string Convert(string text, MixedTextMode mode)
+        public string Convert(string text, MixedTextMode mode, bool replaceCaps = true)
         {
             if (string.IsNullOrEmpty(text))
                 return text;
@@ -80,6 +80,13 @@ namespace KeyboardLayoutFixer
 
             foreach (char c in text)
             {
+                // Skip uppercase English letters if ReplaceCaps is disabled
+                if (!replaceCaps && char.IsUpper(c) && c >= 'A' && c <= 'Z')
+                {
+                    result.Append(c);
+                    continue;
+                }
+
                 char converted = c;
 
                 switch (mode)

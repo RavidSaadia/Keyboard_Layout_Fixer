@@ -83,6 +83,17 @@
                     </StackPanel>
                 </GroupBox>
 
+                <!-- Caps Handling -->
+                <GroupBox Header="Uppercase Letters">
+                    <StackPanel>
+                        <CheckBox x:Name="ReplaceCapsCheckBox"
+                                  Content="Convert uppercase (CAPS) letters"
+                                  Margin="5"/>
+                        <TextBlock Text="When disabled, uppercase letters (A-Z) will be left as-is and only lowercase letters will be converted"
+                                   FontSize="11" Foreground="Gray" Margin="20,0,0,5" TextWrapping="Wrap"/>
+                    </StackPanel>
+                </GroupBox>
+
                 <!-- Mixed Text Mode -->
                 <GroupBox Header="Mixed Text Handling">
                     <StackPanel>

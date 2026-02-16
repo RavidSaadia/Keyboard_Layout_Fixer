@@ -68,6 +68,9 @@ namespace KeyboardLayoutFixer
             // Load character limit
             CharLimitTextBox.Text = settings.MaxCharacterLimit.ToString();
 
+            // Load replace caps
+            ReplaceCapsCheckBox.IsChecked = settings.ReplaceCaps;
+
             // Load mixed text mode
             switch (settings.MixedTextMode)
             {
@@ -149,6 +152,9 @@ namespace KeyboardLayoutFixer
                 {
                     settings.MaxCharacterLimit = Math.Max(0, limit);
                 }
+
+                // Save replace caps
+                settings.ReplaceCaps = ReplaceCapsCheckBox.IsChecked.GetValueOrDefault();
 
                 // Save mixed text mode
                 if (ToggleAllRadio.IsChecked.GetValueOrDefault())
