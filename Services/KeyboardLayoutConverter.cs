@@ -37,7 +37,7 @@ namespace KeyboardLayoutFixer.Services
             {'v', 'ה'}, {'V', 'ה'},
             {'b', 'נ'}, {'B', 'נ'},
             {'n', 'מ'}, {'N', 'מ'},
-            {'m', 'ץ'}, {'M', 'ץ'},
+            {'m', 'צ'}, {'M', 'צ'},
 
             // Punctuation and special characters
             {',', 'ת'},
@@ -76,6 +76,15 @@ namespace KeyboardLayoutFixer.Services
 
             var result = new StringBuilder(text.Length);
 
+            // For ToggleAll, determine predominant language to resolve ambiguous chars like ' and /
+            bool predominantlyEnglish = false;
+            if (mode == MixedTextMode.ToggleAll)
+            {
+                int englishCount = text.Count(c => (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'));
+                int hebrewCount = text.Count(c => c >= '\u0590' && c <= '\u05FF');
+                predominantlyEnglish = englishCount >= hebrewCount;
+            }
+
             foreach (char c in text)
             {
                 // Skip uppercase English letters if ReplaceCaps is disabled
@@ -90,11 +99,18 @@ namespace KeyboardLayoutFixer.Services
                 switch (mode)
                 {
                     case MixedTextMode.ToggleAll:
-                        if (_englishToHebrew.TryGetValue(c, out char hebrewChar))
+                        bool inEnglishDict = _englishToHebrew.TryGetValue(c, out char hebrewChar);
+                        bool inHebrewDict = _hebrewToEnglish.TryGetValue(c, out char englishChar);
+                        if (inEnglishDict && inHebrewDict)
+                        {
+                            // Ambiguous char (e.g. ' or /) - use predominant language direction
+                            converted = predominantlyEnglish ? hebrewChar : englishChar;
+                        }
+                        else if (inEnglishDict)
                         {
                             converted = hebrewChar;
                         }
-                        else if (_hebrewToEnglish.TryGetValue(c, out char englishChar))
+                        else if (inHebrewDict)
                         {
                             converted = englishChar;
                         }
