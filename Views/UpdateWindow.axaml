@@ -1,0 +1,244 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="KeyboardLayoutFixer.Views.UpdateWindow"
+        Title="Keyboard Layout Fixer - Update available"
+        Width="440" SizeToContent="Height"
+        WindowStartupLocation="CenterScreen"
+        CanResize="False"
+        ShowInTaskbar="True"
+        Topmost="True"
+        ShowActivated="False"
+        SystemDecorations="None"
+        TransparencyLevelHint="Transparent"
+        Background="Transparent"
+        Closing="Window_Closing">
+
+    <!-- Self-contained resources/styles so the window renders the same anywhere -->
+    <Window.Resources>
+        <LinearGradientBrush x:Key="BrandGradient" StartPoint="0%,50%" EndPoint="100%,50%">
+            <GradientStop Color="#EB002C" Offset="0.01"/>
+            <GradientStop Color="#FF6E1E" Offset="1.0"/>
+        </LinearGradientBrush>
+        <LinearGradientBrush x:Key="BrandGradientDiagonal" StartPoint="0%,0%" EndPoint="100%,100%">
+            <GradientStop Color="#EB002C" Offset="0"/>
+            <GradientStop Color="#FF6E1E" Offset="1"/>
+        </LinearGradientBrush>
+        <LinearGradientBrush x:Key="BrandGradientHover" StartPoint="0%,50%" EndPoint="100%,50%">
+            <GradientStop Color="#D00028" Offset="0.01"/>
+            <GradientStop Color="#E8601A" Offset="1.0"/>
+        </LinearGradientBrush>
+        <SolidColorBrush x:Key="Navy" Color="#001446"/>
+        <SolidColorBrush x:Key="Muted" Color="#8899BB"/>
+        <SolidColorBrush x:Key="Body" Color="#1D1D1F"/>
+        <SolidColorBrush x:Key="Surface" Color="#FAFBFC"/>
+    </Window.Resources>
+
+    <Window.Styles>
+        <!-- Gradient pill CTA -->
+        <Style Selector="Button.cta">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="700"/>
+            <Setter Property="Padding" Value="26,10"/>
+            <Setter Property="CornerRadius" Value="22"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Background" Value="{StaticResource BrandGradient}"/>
+        </Style>
+        <Style Selector="Button.cta /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{StaticResource BrandGradient}"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BoxShadow" Value="0 4 14 0 #40EB002C"/>
+        </Style>
+        <Style Selector="Button.cta:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{StaticResource BrandGradientHover}"/>
+            <Setter Property="Foreground" Value="White"/>
+        </Style>
+        <Style Selector="Button.cta:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Opacity" Value="0.85"/>
+        </Style>
+
+        <!-- Quiet text button -->
+        <Style Selector="Button.ghost">
+            <Setter Property="Foreground" Value="#5A6B8C"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="600"/>
+            <Setter Property="Padding" Value="20,10"/>
+            <Setter Property="CornerRadius" Value="22"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Background" Value="Transparent"/>
+        </Style>
+        <Style Selector="Button.ghost /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="Transparent"/>
+        </Style>
+        <Style Selector="Button.ghost:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#F0F2F7"/>
+            <Setter Property="Foreground" Value="{StaticResource Navy}"/>
+        </Style>
+
+        <!-- Title bar close button -->
+        <Style Selector="Button.close">
+            <Setter Property="Width" Value="46"/>
+            <Setter Property="Height" Value="36"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="CornerRadius" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Foreground" Value="{StaticResource Muted}"/>
+            <Setter Property="Background" Value="Transparent"/>
+        </Style>
+        <Style Selector="Button.close /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="Transparent"/>
+        </Style>
+        <Style Selector="Button.close:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#E81123"/>
+            <Setter Property="Foreground" Value="White"/>
+        </Style>
+
+        <!-- Gradient progress bar -->
+        <Style Selector="ProgressBar.brand">
+            <Setter Property="Height" Value="8"/>
+            <Setter Property="MinHeight" Value="8"/>
+            <Setter Property="CornerRadius" Value="4"/>
+            <Setter Property="Background" Value="#E6E9F0"/>
+            <Setter Property="Foreground" Value="{StaticResource BrandGradient}"/>
+        </Style>
+
+        <!-- Small "✓ feature" rows -->
+        <Style Selector="TextBlock.perk">
+            <Setter Property="FontSize" Value="12.5"/>
+            <Setter Property="Foreground" Value="#5A6B8C"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="6,0,0,0"/>
+        </Style>
+    </Window.Styles>
+
+    <Border Margin="12" CornerRadius="14" Background="White"
+            BoxShadow="0 8 32 0 #33001446">
+        <Border CornerRadius="14" ClipToBounds="True">
+            <StackPanel>
+
+                <!-- Gradient accent bar -->
+                <Border Height="3" Background="{StaticResource BrandGradient}"/>
+
+                <!-- Title bar -->
+                <Border Height="48" Background="{StaticResource Navy}"
+                        PointerPressed="TitleBar_PointerPressed">
+                    <DockPanel>
+                        <Button x:Name="CloseButton" DockPanel.Dock="Right" Classes="close"
+                                VerticalAlignment="Top" Click="LaterButton_Click">
+                            <TextBlock Text="&#x2715;" FontSize="12"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Button>
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="16,0,0,0">
+                            <Border Width="28" Height="28" CornerRadius="7"
+                                    Background="{StaticResource BrandGradient}">
+                                <TextBlock Text="KB" Foreground="White" FontSize="11" FontWeight="700"
+                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <TextBlock Text="Keyboard Layout Fixer" Foreground="White"
+                                       FontSize="14" FontWeight="600"
+                                       VerticalAlignment="Center" Margin="10,0,0,0"/>
+                        </StackPanel>
+                    </DockPanel>
+                </Border>
+
+                <!-- Body -->
+                <StackPanel Background="{StaticResource Surface}">
+
+                    <!-- Hero badge: soft halo + gradient circle + rocket-style up arrow -->
+                    <Grid Width="104" Height="104" Margin="0,26,0,0" HorizontalAlignment="Center">
+                        <Ellipse Fill="#14FF6E1E"/>
+                        <Ellipse Margin="12" Fill="#22EB002C"/>
+                        <Border x:Name="HeroBadge" Width="64" Height="64" CornerRadius="32"
+                                Background="{StaticResource BrandGradientDiagonal}"
+                                BoxShadow="0 6 18 0 #55EB002C">
+                            <Grid>
+                                <!-- Up arrow (offer / progress) -->
+                                <Path x:Name="HeroArrow" Width="26" Height="28" Stretch="Uniform"
+                                      Stroke="White" StrokeThickness="3.2"
+                                      StrokeLineCap="Round" StrokeJoin="Round"
+                                      Data="M 12,21 L 12,4 M 5,11 L 12,4 L 19,11"/>
+                                <!-- Exclamation (error) -->
+                                <StackPanel x:Name="HeroError" IsVisible="False"
+                                            HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    <Border Width="5" Height="19" CornerRadius="2.5" Background="White"/>
+                                    <Ellipse Width="5.5" Height="5.5" Fill="White" Margin="0,4,0,0"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                        <!-- Sparkles -->
+                        <Path Width="14" Height="14" Stretch="Uniform" Fill="#FF6E1E"
+                              HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,10,8,0"
+                              Data="M 7,0 L 8.6,5.4 L 14,7 L 8.6,8.6 L 7,14 L 5.4,8.6 L 0,7 L 5.4,5.4 Z"/>
+                        <Path Width="9" Height="9" Stretch="Uniform" Fill="#EB002C" Opacity="0.75"
+                              HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="10,0,0,14"
+                              Data="M 7,0 L 8.6,5.4 L 14,7 L 8.6,8.6 L 7,14 L 5.4,8.6 L 0,7 L 5.4,5.4 Z"/>
+                        <Ellipse Width="6" Height="6" Fill="#FF6E1E" Opacity="0.6"
+                                 HorizontalAlignment="Left" VerticalAlignment="Top" Margin="14,18,0,0"/>
+                    </Grid>
+
+                    <TextBlock x:Name="HeadlineText" Text="A new version is ready!"
+                               HorizontalAlignment="Center" Margin="24,12,24,0"
+                               FontSize="21" FontWeight="700" Foreground="{StaticResource Navy}"/>
+                    <TextBlock x:Name="SubtitleText"
+                               Text="Fresh improvements are waiting for you."
+                               HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap"
+                               Margin="28,6,28,0" FontSize="13.5" Foreground="#5A6B8C"/>
+
+                    <!-- Version pills: current → new -->
+                    <StackPanel x:Name="VersionRow" Orientation="Horizontal" HorizontalAlignment="Center"
+                                Margin="0,18,0,0">
+                        <Border CornerRadius="14" Padding="14,6" Background="#EEF1F6">
+                            <TextBlock x:Name="CurrentVersionText" Text="v1.0.0"
+                                       FontSize="13" FontWeight="600" Foreground="#7A88A6"/>
+                        </Border>
+                        <Path Width="18" Height="12" Margin="12,0" Stretch="Uniform" VerticalAlignment="Center"
+                              Stroke="#B5BFD3" StrokeThickness="2" StrokeLineCap="Round" StrokeJoin="Round"
+                              Data="M 0,6 L 16,6 M 11,1 L 16,6 L 11,11"/>
+                        <Border CornerRadius="14" Padding="14,6" Background="{StaticResource BrandGradient}"
+                                BoxShadow="0 3 10 0 #33EB002C">
+                            <TextBlock x:Name="NewVersionText" Text="v1.3.0"
+                                       FontSize="13" FontWeight="700" Foreground="White"/>
+                        </Border>
+                    </StackPanel>
+
+                    <!-- Perks -->
+                    <StackPanel x:Name="PerksRow" Orientation="Horizontal" HorizontalAlignment="Center"
+                                Margin="0,18,0,24">
+                        <Path Width="12" Height="10" Stretch="Uniform" VerticalAlignment="Center"
+                              Stroke="#1FA971" StrokeThickness="2.2" StrokeLineCap="Round" StrokeJoin="Round"
+                              Data="M 1,5 L 4.5,8.5 L 11,1.5"/>
+                        <TextBlock Classes="perk" Text="Takes a few seconds"/>
+                        <Path Width="12" Height="10" Margin="18,0,0,0" Stretch="Uniform" VerticalAlignment="Center"
+                              Stroke="#1FA971" StrokeThickness="2.2" StrokeLineCap="Round" StrokeJoin="Round"
+                              Data="M 1,5 L 4.5,8.5 L 11,1.5"/>
+                        <TextBlock Classes="perk" Text="Your settings are kept"/>
+                    </StackPanel>
+
+                    <!-- Progress (shown while installing) -->
+                    <StackPanel x:Name="ProgressPanel" IsVisible="False" Margin="36,20,36,28">
+                        <ProgressBar x:Name="DownloadProgress" Classes="brand" Minimum="0" Maximum="100"/>
+                        <TextBlock x:Name="ProgressText" Text="Downloading…" HorizontalAlignment="Center"
+                                   Margin="0,10,0,0" FontSize="12.5" Foreground="#5A6B8C"/>
+                    </StackPanel>
+                </StackPanel>
+
+                <!-- Footer -->
+                <Border x:Name="Footer" Background="White" BorderBrush="#EEF0F4" BorderThickness="0,1,0,0"
+                        Padding="20,14">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+                        <Button x:Name="LaterButton" Classes="ghost" Content="Later"
+                                Click="LaterButton_Click"/>
+                        <Button x:Name="ManualButton" Classes="ghost" Content="Download manually"
+                                IsVisible="False" Click="ManualButton_Click"/>
+                        <Button x:Name="UpdateButton" Classes="cta" Content="Update now"
+                                Click="UpdateButton_Click"/>
+                    </StackPanel>
+                </Border>
+
+            </StackPanel>
+        </Border>
+    </Border>
+</Window>

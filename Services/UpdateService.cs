@@ -107,7 +107,8 @@ namespace KeyboardLayoutFixer.Services
         /// and starts it. The caller must shut down the current process afterwards.
         /// On failure the original exe is left in place and an UpdateException is thrown.
         /// </summary>
-        public async Task InstallAsync(UpdateInfo update)
+        /// <param name="progress">Optional download progress, 0..1 (only reported if the server sends Content-Length).</param>
+        public async Task InstallAsync(UpdateInfo update, IProgress<double>? progress = null)
         {
             string exePath = Environment.ProcessPath
                 ?? throw new UpdateException("Could not determine the application's location.");
@@ -121,10 +122,22 @@ namespace KeyboardLayoutFixer.Services
 
                 // 1. Download the exe next to the current one (same folder => renames are atomic)
                 _log($"Downloading {downloadBase}{AssetName}");
-                await using (var source = await client.GetStreamAsync(downloadBase + AssetName))
-                await using (var target = File.Create(newPath))
+                using (var response = await client.GetAsync(downloadBase + AssetName, HttpCompletionOption.ResponseHeadersRead))
                 {
-                    await source.CopyToAsync(target);
+                    response.EnsureSuccessStatusCode();
+                    long? total = response.Content.Headers.ContentLength;
+
+                    await using var source = await response.Content.ReadAsStreamAsync();
+                    await using var target = File.Create(newPath);
+                    var buffer = new byte[81920];
+                    long received = 0;
+                    int read;
+                    while ((read = await source.ReadAsync(buffer)) > 0)
+                    {
+                        await target.WriteAsync(buffer.AsMemory(0, read));
+                        received += read;
+                        if (total > 0) progress?.Report((double)received / total.Value);
+                    }
                 }
 
                 // 2. Verify checksum
@@ -143,6 +156,7 @@ namespace KeyboardLayoutFixer.Services
             }
             catch (Exception ex)
             {
+                _log($"Update download failed: {ex}");
                 TryDelete(newPath);
                 if (ex is UpdateException) throw;
                 if (ex is UnauthorizedAccessException)
@@ -167,6 +181,7 @@ namespace KeyboardLayoutFixer.Services
             }
             catch (Exception ex)
             {
+                _log($"Update swap failed: {ex}");
                 TryDelete(newPath);
                 throw new UpdateException($"Could not replace the application file: {ex.Message}", ex);
             }

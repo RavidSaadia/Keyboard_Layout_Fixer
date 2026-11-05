@@ -7,8 +7,6 @@ using KeyboardLayoutFixer.Models;
 using KeyboardLayoutFixer.Platform;
 using KeyboardLayoutFixer.Services;
 using KeyboardLayoutFixer.Views;
-using MsBox.Avalonia;
-using MsBox.Avalonia.Enums;
 using System.IO;
 
 namespace KeyboardLayoutFixer
@@ -144,34 +142,14 @@ namespace KeyboardLayoutFixer
                 }
 
                 LogDebug($"Update available: {latest.Tag}");
-                var answer = await MessageBoxManager.GetMessageBoxStandard(
-                    "Update available",
-                    "A new version of Keyboard Layout Fixer is available.\n\n" +
-                    $"Current version: {AppVersion}\nNew version: {latest.Version}\n\n" +
-                    "Update now? The app will restart automatically.",
-                    ButtonEnum.YesNo, MsBox.Avalonia.Enums.Icon.Info)
-                    .ShowAsync();
+                // The window handles Update now / Later, progress and errors itself
+                var window = new UpdateWindow(latest, AppVersion, updater);
+                bool installed = await window.ShowAndWaitAsync();
 
-                if (answer != ButtonResult.Yes)
-                {
-                    LogDebug("Update postponed by user");
-                    return;
-                }
-
-                try
-                {
-                    await updater.InstallAsync(latest);
+                if (installed)
                     ExitApplication();
-                }
-                catch (UpdateException ex)
-                {
-                    LogDebug($"Update failed: {ex}");
-                    await MessageBoxManager.GetMessageBoxStandard(
-                        "Update failed",
-                        $"{ex.Message}\n\nYou can download the new version manually from:\n{UpdateService.LatestReleaseUrl}",
-                        ButtonEnum.Ok, MsBox.Avalonia.Enums.Icon.Error)
-                        .ShowAsync();
-                }
+                else
+                    LogDebug("Update window closed without installing");
             }
             catch (Exception ex)
             {
