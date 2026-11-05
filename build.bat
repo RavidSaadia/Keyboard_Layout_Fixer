@@ -43,7 +43,7 @@ echo ================================================
 echo Build completed successfully!
 echo ================================================
 echo.
-echo Executable location: bin\Release\net8.0-windows\KeyboardLayoutFixer.exe
+echo Executable location: bin\Release\net8.0\KeyboardLayoutFixer.exe
 echo.
 
 echo Would you like to create a standalone executable? (Y/N)
@@ -63,7 +63,7 @@ if /i "%standalone%"=="Y" (
     echo Standalone executable created!
     echo ================================================
     echo.
-    echo Location: bin\Release\net8.0-windows\win-x64\publish\KeyboardLayoutFixer.exe
+    echo Location: bin\Release\net8.0\win-x64\publish\KeyboardLayoutFixer.exe
     echo.
     echo This file can be distributed and run on any Windows 10+ machine
     echo without requiring .NET to be installed.

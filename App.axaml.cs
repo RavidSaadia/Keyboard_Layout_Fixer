@@ -7,20 +7,29 @@ using KeyboardLayoutFixer.Models;
 using KeyboardLayoutFixer.Platform;
 using KeyboardLayoutFixer.Services;
 using KeyboardLayoutFixer.Views;
+using MsBox.Avalonia;
+using MsBox.Avalonia.Enums;
 using System.IO;
 
 namespace KeyboardLayoutFixer
 {
     public partial class App : Application
     {
-        public const string AppVersion = "1.2.8";
+        /// <summary>
+        /// App version (Major.Minor.Build), taken from &lt;Version&gt; in the csproj / the CI tag.
+        /// </summary>
+        public static readonly string AppVersion = GetAppVersion();
+
+        private static readonly TimeSpan FirstUpdateCheckDelay = TimeSpan.FromSeconds(30);
+        private static readonly TimeSpan UpdateCheckInterval = TimeSpan.FromHours(24);
 
         private static Mutex? _mutex;
         private IPlatformServices? _platformServices;
         private SettingsManager _settingsManager = new();
         private KeyboardLayoutConverter _converter = new();
         private MainWindow? _settingsWindow;
-        private bool _isEnabled = true;
+        private DispatcherTimer? _updateTimer;
+        private bool _updateInProgress;
 
         public override void Initialize()
         {
@@ -39,9 +48,16 @@ namespace KeyboardLayoutFixer
                     CloseExistingInstances();
                     _mutex = new Mutex(true, "KeyboardLayoutFixer_SingleInstance");
 
+                    // Remove files left by a previous self-update (old instance is closed by now)
+                    UpdateService.CleanupLeftovers();
+
                     // Load settings
                     _settingsManager.LoadSettings();
                     LogDebug("Settings loaded");
+
+                    // Keep the Windows startup entry in sync with the saved setting
+                    // (also re-points it at the current exe if the file was moved)
+                    StartupManager.Apply(_settingsManager.Settings.RunAtStartup);
 
                     // Create platform services
                     _platformServices = PlatformServiceFactory.Create();
@@ -54,13 +70,20 @@ namespace KeyboardLayoutFixer
                     // Update tray icon tooltip with version
                     var trayIcons = TrayIcon.GetIcons(this);
                     if (trayIcons?.Count > 0)
+                    {
                         trayIcons[0].ToolTipText = $"Keyboard Layout Fixer v{AppVersion}";
+                        UpdateToggleMenuHeader(trayIcons[0]);
+                    }
+
+                    // Periodic update check
+                    StartUpdateTimer();
 
                     // Tray-only app: no main window, shutdown only on explicit request
                     desktop.ShutdownMode = ShutdownMode.OnExplicitShutdown;
 
                     desktop.ShutdownRequested += (_, _) =>
                     {
+                        _updateTimer?.Stop();
                         _platformServices?.UnregisterHotkey();
                         _platformServices?.Dispose();
                         _mutex?.ReleaseMutex();
@@ -76,6 +99,88 @@ namespace KeyboardLayoutFixer
             }
 
             base.OnFrameworkInitializationCompleted();
+        }
+
+        private static string GetAppVersion()
+        {
+            var v = typeof(App).Assembly.GetName().Version;
+            return v == null ? "0.0.0" : $"{v.Major}.{v.Minor}.{Math.Max(v.Build, 0)}";
+        }
+
+        // --- Auto-update ---
+
+        private void StartUpdateTimer()
+        {
+            if (!UpdateService.CanSelfUpdate)
+            {
+                LogDebug("Auto-update unavailable (not a published single-file exe)");
+                return;
+            }
+
+            _updateTimer = new DispatcherTimer { Interval = FirstUpdateCheckDelay };
+            _updateTimer.Tick += async (_, _) =>
+            {
+                _updateTimer.Interval = UpdateCheckInterval;
+                await CheckForUpdatesAsync();
+            };
+            _updateTimer.Start();
+        }
+
+        private async Task CheckForUpdatesAsync()
+        {
+            // The setting is read on every tick, so toggling it in Settings applies without a restart
+            if (_updateInProgress || !_settingsManager.Settings.AutoUpdate)
+                return;
+
+            _updateInProgress = true;
+            try
+            {
+                var updater = new UpdateService(AppVersion, LogDebug);
+                var latest = await updater.GetLatestReleaseAsync();
+                if (latest == null || !UpdateService.IsNewer(latest.Version, Version.Parse(AppVersion)))
+                {
+                    LogDebug($"Update check: up to date (current {AppVersion}, latest {latest?.Tag ?? "unknown"})");
+                    return;
+                }
+
+                LogDebug($"Update available: {latest.Tag}");
+                var answer = await MessageBoxManager.GetMessageBoxStandard(
+                    "Update available",
+                    "A new version of Keyboard Layout Fixer is available.\n\n" +
+                    $"Current version: {AppVersion}\nNew version: {latest.Version}\n\n" +
+                    "Update now? The app will restart automatically.",
+                    ButtonEnum.YesNo, MsBox.Avalonia.Enums.Icon.Info)
+                    .ShowAsync();
+
+                if (answer != ButtonResult.Yes)
+                {
+                    LogDebug("Update postponed by user");
+                    return;
+                }
+
+                try
+                {
+                    await updater.InstallAsync(latest);
+                    ExitApplication();
+                }
+                catch (UpdateException ex)
+                {
+                    LogDebug($"Update failed: {ex}");
+                    await MessageBoxManager.GetMessageBoxStandard(
+                        "Update failed",
+                        $"{ex.Message}\n\nYou can download the new version manually from:\n{UpdateService.LatestReleaseUrl}",
+                        ButtonEnum.Ok, MsBox.Avalonia.Enums.Icon.Error)
+                        .ShowAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                LogDebug($"Update check error: {ex}");
+            }
+            finally
+            {
+                _updateInProgress = false;
+            }
         }
 
         private void RegisterHotkey()
@@ -104,7 +209,7 @@ namespace KeyboardLayoutFixer
 
         private async void OnHotkeyPressed()
         {
-            if (!_isEnabled)
+            if (!_settingsManager.Settings.IsEnabled)
             {
                 LogDebug("Hotkey pressed but app is disabled, ignoring");
                 return;
@@ -231,12 +336,23 @@ namespace KeyboardLayoutFixer
 
         private void Toggle_Click(object? sender, EventArgs e)
         {
-            _isEnabled = !_isEnabled;
+            var settings = _settingsManager.Settings;
+            settings.IsEnabled = !settings.IsEnabled;
+            _settingsManager.SaveSettings();
             if (sender is NativeMenuItem menuItem)
             {
-                menuItem.Header = _isEnabled ? "Disable" : "Enable";
+                menuItem.Header = settings.IsEnabled ? "Disable" : "Enable";
             }
-            LogDebug($"App {(_isEnabled ? "enabled" : "disabled")}");
+            LogDebug($"App {(settings.IsEnabled ? "enabled" : "disabled")}");
+        }
+
+        private void UpdateToggleMenuHeader(TrayIcon trayIcon)
+        {
+            var toggleItem = trayIcon.Menu?.Items
+                .OfType<NativeMenuItem>()
+                .FirstOrDefault(i => i.Header is "Disable" or "Enable");
+            if (toggleItem != null)
+                toggleItem.Header = _settingsManager.Settings.IsEnabled ? "Disable" : "Enable";
         }
 
         private void Restart_Click(object? sender, EventArgs e)

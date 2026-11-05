@@ -1,0 +1,53 @@
+# Builds the single-file exe and publishes a GitHub Release when a version tag is pushed:
+#   git tag v1.3.0 && git push origin v1.3.0
+# The running app's auto-updater looks for KeyboardLayoutFixer.exe and KeyboardLayoutFixer.exe.sha256
+# on the latest release, so both asset names must stay exactly as they are.
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Get version from tag
+        id: version
+        shell: pwsh
+        run: |
+          $version = "${{ github.ref_name }}".TrimStart('v')
+          if ($version -notmatch '^\d+\.\d+(\.\d+)?$') { throw "Tag '${{ github.ref_name }}' is not a version like v1.3.0" }
+          "value=$version" >> $env:GITHUB_OUTPUT
+
+      - name: Test
+        run: dotnet test tests/KeyboardLayoutFixer.Tests -c Release
+
+      - name: Publish single-file exe
+        run: >
+          dotnet publish KeyboardLayoutFixer.csproj -c Release -r win-x64 --self-contained true
+          -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true
+          -p:Version=${{ steps.version.outputs.value }}
+          -o publish
+
+      - name: Write checksum
+        shell: pwsh
+        run: |
+          $hash = (Get-FileHash publish/KeyboardLayoutFixer.exe -Algorithm SHA256).Hash.ToLower()
+          Set-Content -Path publish/KeyboardLayoutFixer.exe.sha256 -Value $hash -NoNewline -Encoding ascii
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            publish/KeyboardLayoutFixer.exe
+            publish/KeyboardLayoutFixer.exe.sha256
+          generate_release_notes: true

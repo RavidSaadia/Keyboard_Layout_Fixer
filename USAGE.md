@@ -14,7 +14,7 @@ You meant: `שלום` (in Hebrew)
 
 **Solution:**
 1. Select the text `akyn`
-2. Press `Ctrl+Q`
+2. Press `Alt+Q`
 3. Text is automatically replaced with `שלום`
 
 ### Example Scenario 2: Entire Textbox
@@ -26,7 +26,7 @@ rypv whc,u nra eyua fso hfnku sjrka
 
 **Solution:**
 1. Click in the textbox (don't select anything)
-2. Press `Ctrl+Q`
+2. Press `Alt+Q`
 3. All text is converted to Hebrew:
 ```
 תקטן אחמפו הנש צטשש גדם יגהלו דחנלש

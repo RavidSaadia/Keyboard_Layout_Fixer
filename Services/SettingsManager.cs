@@ -78,7 +78,12 @@ namespace KeyboardLayoutFixer.Services
             try
             {
                 string json = JsonConvert.SerializeObject(Settings, Formatting.Indented);
-                File.WriteAllText(_settingsPath, json);
+
+                // Write to a temp file first, then swap it in, so a crash or power
+                // loss mid-write can never leave a half-written settings.json behind.
+                string tempPath = _settingsPath + ".tmp";
+                File.WriteAllText(tempPath, json);
+                File.Move(tempPath, _settingsPath, overwrite: true);
             }
             catch (Exception ex)
             {

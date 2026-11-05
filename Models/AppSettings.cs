@@ -10,7 +10,7 @@ namespace KeyboardLayoutFixer.Models
         /// <summary>
         /// Modifier keys for the global hotkey (Ctrl, Alt, Shift, Win)
         /// </summary>
-        public HotkeyModifiers HotkeyModifiers { get; set; } = HotkeyModifiers.Control;
+        public HotkeyModifiers HotkeyModifiers { get; set; } = HotkeyModifiers.Alt;
 
         /// <summary>
         /// The key for the global hotkey
@@ -20,7 +20,7 @@ namespace KeyboardLayoutFixer.Models
         /// <summary>
         /// Maximum number of characters to process (0 = unlimited)
         /// </summary>
-        public int MaxCharacterLimit { get; set; } = 0;
+        public int MaxCharacterLimit { get; set; } = 200;
 
         /// <summary>
         /// How to handle text that contains both Hebrew and English
@@ -30,17 +30,27 @@ namespace KeyboardLayoutFixer.Models
         /// <summary>
         /// Whether to convert uppercase (CAPS) letters or leave them as-is
         /// </summary>
-        public bool ReplaceCaps { get; set; } = true;
+        public bool ReplaceCaps { get; set; } = false;
 
         /// <summary>
         /// Whether to automatically switch keyboard language after conversion
         /// </summary>
-        public bool SwitchLanguageAfterConvert { get; set; } = false;
+        public bool SwitchLanguageAfterConvert { get; set; } = true;
 
         /// <summary>
         /// Whether to start the application automatically when Windows starts
         /// </summary>
-        public bool RunAtStartup { get; set; } = false;
+        public bool RunAtStartup { get; set; } = true;
+
+        /// <summary>
+        /// Whether the hotkey is active (toggled from the tray menu Disable/Enable)
+        /// </summary>
+        public bool IsEnabled { get; set; } = true;
+
+        /// <summary>
+        /// Whether to check GitHub for a newer version and offer to install it
+        /// </summary>
+        public bool AutoUpdate { get; set; } = true;
 
         /// <summary>
         /// Validates settings and resets invalid values to defaults
@@ -49,7 +59,17 @@ namespace KeyboardLayoutFixer.Models
         {
             if (HotkeyModifiers == HotkeyModifiers.None)
             {
-                HotkeyModifiers = HotkeyModifiers.Control;
+                HotkeyModifiers = HotkeyModifiers.Alt;
+            }
+
+            if (HotkeyKey == HotkeyKey.None)
+            {
+                HotkeyKey = HotkeyKey.Q;
+            }
+
+            if (MaxCharacterLimit < 0)
+            {
+                MaxCharacterLimit = 0;
             }
         }
 

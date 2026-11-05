@@ -78,7 +78,7 @@
                                 <Border Background="{StaticResource PrimaryGradientBrush}"
                                         CornerRadius="20" Padding="28,10"
                                         HorizontalAlignment="Center" Margin="0,0,0,20">
-                                    <TextBlock x:Name="HotkeyDisplay" Text="Ctrl+Q"
+                                    <TextBlock x:Name="HotkeyDisplay" Text="Alt+Q"
                                                Foreground="White" FontSize="18" FontWeight="700"
                                                HorizontalAlignment="Center"/>
                                 </Border>
@@ -129,7 +129,7 @@
                                                VerticalAlignment="Center" Margin="0,0,12,0"
                                                FontSize="13.5" FontWeight="600"
                                                Foreground="{StaticResource DarkNavyBrush}"/>
-                                    <TextBox x:Name="CharLimitTextBox" Classes="custom" Text="0"
+                                    <TextBox x:Name="CharLimitTextBox" Classes="custom" Text="200"
                                              Width="120" HorizontalAlignment="Left"/>
                                 </DockPanel>
                             </StackPanel>
@@ -164,6 +164,12 @@
                                 <CheckBox x:Name="RunAtStartupCheckBox"
                                           Content="Run at Windows startup" Margin="0,0,0,2"/>
                                 <TextBlock Text="Automatically start the application when you log in to Windows"
+                                           FontSize="12" Foreground="{StaticResource MutedBlueGrayBrush}"
+                                           Margin="30,0,0,16" TextWrapping="Wrap"/>
+
+                                <CheckBox x:Name="AutoUpdateCheckBox"
+                                          Content="Check for updates automatically" Margin="0,0,0,2"/>
+                                <TextBlock Text="Checks GitHub for a newer version at startup and once a day, and asks before installing"
                                            FontSize="12" Foreground="{StaticResource MutedBlueGrayBrush}"
                                            Margin="30,0,0,0" TextWrapping="Wrap"/>
                             </StackPanel>
