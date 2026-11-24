@@ -13,6 +13,7 @@ namespace KeyboardLayoutFixer.Views
     {
         private SettingsManager _settingsManager;
         public event EventHandler? HotkeyChanged;
+        public event EventHandler? CheckForUpdatesRequested;
 
         public MainWindow(SettingsManager settingsManager)
         {
@@ -199,6 +200,11 @@ namespace KeyboardLayoutFixer.Views
                     ButtonEnum.Ok, MsBox.Avalonia.Enums.Icon.Error)
                     .ShowWindowDialogAsync(this);
             }
+        }
+
+        private void CheckUpdatesButton_Click(object? sender, RoutedEventArgs e)
+        {
+            CheckForUpdatesRequested?.Invoke(this, EventArgs.Empty);
         }
 
         private void CancelButton_Click(object? sender, RoutedEventArgs e)

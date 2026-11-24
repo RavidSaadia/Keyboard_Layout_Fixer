@@ -51,6 +51,7 @@
                 <TrayIcon.Menu>
                     <NativeMenu>
                         <NativeMenuItem Header="Settings" Click="Settings_Click"/>
+                        <NativeMenuItem Header="Check for updates" Click="CheckUpdates_Click"/>
                         <NativeMenuItemSeparator/>
                         <NativeMenuItem Header="Disable" Click="Toggle_Click"/>
                         <NativeMenuItem Header="Restart" Click="Restart_Click"/>

@@ -186,6 +186,32 @@
         <Setter Property="Opacity" Value="0.85"/>
     </Style>
 
+    <!-- Outlined Button for light (white card) backgrounds -->
+    <Style Selector="Button.outline">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground" Value="{StaticResource BodyTextBrush}"/>
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="FontWeight" Value="600"/>
+        <Setter Property="Padding" Value="28,9"/>
+        <Setter Property="BorderThickness" Value="1.5"/>
+        <Setter Property="BorderBrush" Value="{StaticResource MutedBlueGrayBrush}"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="CornerRadius" Value="20"/>
+    </Style>
+
+    <!-- The Fluent theme restyles the template part on hover/press, so target it directly -->
+    <Style Selector="Button.outline:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="#0F001446"/>
+        <Setter Property="BorderBrush" Value="{StaticResource AccentRedBrush}"/>
+        <Setter Property="Foreground" Value="{StaticResource AccentRedBrush}"/>
+    </Style>
+
+    <Style Selector="Button.outline:pressed /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="#1A001446"/>
+        <Setter Property="BorderBrush" Value="{StaticResource AccentRedBrush}"/>
+        <Setter Property="Foreground" Value="{StaticResource AccentRedBrush}"/>
+    </Style>
+
     <!-- Window Close Button -->
     <Style Selector="Button.closeBtn">
         <Setter Property="Width" Value="46"/>

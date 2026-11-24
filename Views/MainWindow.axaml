@@ -171,7 +171,9 @@
                                           Content="Check for updates automatically" Margin="0,0,0,2"/>
                                 <TextBlock Text="Checks GitHub for a newer version at startup and once a day, and asks before installing"
                                            FontSize="12" Foreground="{StaticResource MutedBlueGrayBrush}"
-                                           Margin="30,0,0,0" TextWrapping="Wrap"/>
+                                           Margin="30,0,0,12" TextWrapping="Wrap"/>
+                                <Button Content="Check for updates now" Classes="outline"
+                                        Click="CheckUpdatesButton_Click" Margin="30,0,0,0"/>
                             </StackPanel>
                         </Border>
 

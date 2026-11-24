@@ -7,7 +7,10 @@ using KeyboardLayoutFixer.Models;
 using KeyboardLayoutFixer.Platform;
 using KeyboardLayoutFixer.Services;
 using KeyboardLayoutFixer.Views;
+using MsBox.Avalonia;
+using MsBox.Avalonia.Enums;
 using System.IO;
+using Icon = MsBox.Avalonia.Enums.Icon;
 
 namespace KeyboardLayoutFixer
 {
@@ -128,20 +131,43 @@ namespace KeyboardLayoutFixer
             _updateTimer.Start();
         }
 
-        private async Task CheckForUpdatesAsync()
+        /// <param name="manual">
+        /// True when the user asked (tray menu / Settings): ignores the AutoUpdate setting and
+        /// always reports the result. Timer checks stay silent unless an update is found.
+        /// </param>
+        private async Task CheckForUpdatesAsync(bool manual = false)
         {
             // The setting is read on every tick, so toggling it in Settings applies without a restart
-            if (_updateInProgress || !_settingsManager.Settings.AutoUpdate)
+            if (_updateInProgress || (!manual && !_settingsManager.Settings.AutoUpdate))
                 return;
+
+            if (manual && !UpdateService.CanSelfUpdate)
+            {
+                await ShowUpdateMessageAsync(
+                    $"This build (v{AppVersion}) can't update itself.\nDownload the latest version from:\n{UpdateService.LatestReleaseUrl}",
+                    Icon.Info);
+                return;
+            }
 
             _updateInProgress = true;
             try
             {
                 var updater = new UpdateService(AppVersion, LogDebug);
                 var latest = await updater.GetLatestReleaseAsync();
-                if (latest == null || !UpdateService.IsNewer(latest.Version, Version.Parse(AppVersion)))
+                if (latest == null)
                 {
-                    LogDebug($"Update check: up to date (current {AppVersion}, latest {latest?.Tag ?? "unknown"})");
+                    LogDebug("Update check: no release info");
+                    if (manual)
+                        await ShowUpdateMessageAsync(
+                            "Couldn't check for updates. Check your internet connection and try again.",
+                            Icon.Warning);
+                    return;
+                }
+                if (!UpdateService.IsNewer(latest.Version, Version.Parse(AppVersion)))
+                {
+                    LogDebug($"Update check: up to date (current {AppVersion}, latest {latest.Tag})");
+                    if (manual)
+                        await ShowUpdateMessageAsync($"You're on the latest version (v{AppVersion}).", Icon.Success);
                     return;
                 }
 
@@ -164,6 +190,9 @@ namespace KeyboardLayoutFixer
                 _updateInProgress = false;
             }
         }
+
+        private static Task ShowUpdateMessageAsync(string message, Icon icon) =>
+            MessageBoxManager.GetMessageBoxStandard("Check for Updates", message, ButtonEnum.Ok, icon).ShowAsync();
 
         private void RegisterHotkey()
         {
@@ -316,6 +345,11 @@ namespace KeyboardLayoutFixer
             ShowSettings();
         }
 
+        private async void CheckUpdates_Click(object? sender, EventArgs e)
+        {
+            await CheckForUpdatesAsync(manual: true);
+        }
+
         private void Toggle_Click(object? sender, EventArgs e)
         {
             var settings = _settingsManager.Settings;
@@ -353,6 +387,7 @@ namespace KeyboardLayoutFixer
             {
                 _settingsWindow = new MainWindow(_settingsManager);
                 _settingsWindow.HotkeyChanged += OnHotkeyChanged;
+                _settingsWindow.CheckForUpdatesRequested += async (_, _) => await CheckForUpdatesAsync(manual: true);
                 _settingsWindow.Show();
             }
             else
