@@ -8,6 +8,11 @@
     <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
     <!-- Single source of truth for the app version. CI overrides it from the git tag (-p:Version=X.Y.Z). -->
     <Version>1.3.1</Version>
+    <PublishTrimmed>true</PublishTrimmed>
+    <TrimMode>partial</TrimMode>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+    <!-- Trimming turns reflection-based System.Text.Json off by default; SettingsManager needs it -->
+    <JsonSerializerIsReflectionEnabledByDefault>true</JsonSerializerIsReflectionEnabledByDefault>
   </PropertyGroup>
 
   <ItemGroup>
@@ -26,9 +31,6 @@
     <PackageReference Include="Avalonia" Version="11.2.3" />
     <PackageReference Include="Avalonia.Desktop" Version="11.2.3" />
     <PackageReference Include="Avalonia.Themes.Fluent" Version="11.2.3" />
-
-    <!-- JSON settings -->
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 
     <!-- MessageBox replacement -->
     <PackageReference Include="MessageBox.Avalonia" Version="3.1.6" />

@@ -79,6 +79,10 @@ namespace KeyboardLayoutFixer
                     // Tray-only app: no main window, shutdown only on explicit request
                     desktop.ShutdownMode = ShutdownMode.OnExplicitShutdown;
 
+                    // Open settings on first run
+                    if (_settingsManager.IsFirstRun)
+                        Dispatcher.UIThread.Post(ShowSettings);
+
                     desktop.ShutdownRequested += (_, _) =>
                     {
                         _updateTimer?.Stop();

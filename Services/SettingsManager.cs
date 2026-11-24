@@ -1,5 +1,5 @@
-using Newtonsoft.Json;
 using System.IO;
+using System.Text.Json;
 using KeyboardLayoutFixer.Models;
 
 namespace KeyboardLayoutFixer.Services
@@ -12,8 +12,14 @@ namespace KeyboardLayoutFixer.Services
         private const string SETTINGS_FILENAME = "settings.json";
         private readonly string _settingsPath;
         private readonly object _lock = new object();
+        private static readonly JsonSerializerOptions _jsonOptions = new()
+        {
+            WriteIndented = true,
+            PropertyNameCaseInsensitive = true
+        };
 
         public AppSettings Settings { get; private set; }
+        public bool IsFirstRun { get; private set; }
 
         public SettingsManager()
         {
@@ -39,10 +45,11 @@ namespace KeyboardLayoutFixer.Services
             {
                 try
                 {
-                    if (File.Exists(_settingsPath))
+                    IsFirstRun = !File.Exists(_settingsPath);
+                    if (!IsFirstRun)
                     {
                         string json = File.ReadAllText(_settingsPath);
-                        var loaded = JsonConvert.DeserializeObject<AppSettings>(json);
+                        var loaded = JsonSerializer.Deserialize<AppSettings>(json, _jsonOptions);
                         if (loaded != null)
                         {
                             loaded.Validate();
@@ -77,7 +84,7 @@ namespace KeyboardLayoutFixer.Services
         {
             try
             {
-                string json = JsonConvert.SerializeObject(Settings, Formatting.Indented);
+                string json = JsonSerializer.Serialize(Settings, _jsonOptions);
 
                 // Write to a temp file first, then swap it in, so a crash or power
                 // loss mid-write can never leave a half-written settings.json behind.

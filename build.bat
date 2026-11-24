@@ -6,7 +6,7 @@ echo.
 
 REM Check if .NET SDK is installed
 dotnet --version >nul 2>&1
-if errorlevel 1 (
+if %errorlevel% neq 0 (
     echo ERROR: .NET SDK is not installed or not in PATH
     echo Please install .NET 8.0 SDK from https://dotnet.microsoft.com/download/dotnet/8.0
     pause
@@ -23,7 +23,7 @@ echo.
 
 echo Restoring dependencies...
 dotnet restore
-if errorlevel 1 (
+if %errorlevel% neq 0 (
     echo ERROR: Failed to restore dependencies
     pause
     exit /b 1
@@ -32,7 +32,7 @@ echo.
 
 echo Building Release version...
 dotnet build --configuration Release
-if errorlevel 1 (
+if %errorlevel% neq 0 (
     echo ERROR: Build failed
     pause
     exit /b 1
@@ -52,8 +52,7 @@ set /p standalone=
 if /i "%standalone%"=="Y" (
     echo.
     echo Creating standalone single-file executable...
-    dotnet publish -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true
-    if errorlevel 1 (
+    dotnet publish -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true || (
         echo ERROR: Publish failed
         pause
         exit /b 1
